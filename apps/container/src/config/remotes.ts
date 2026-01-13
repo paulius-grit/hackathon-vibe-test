@@ -25,6 +25,14 @@ const remoteApps: RemoteAppConfig[] = [
     scope: "demo-app",
     module: "./App",
   },
+  {
+    name: "calendar-app",
+    title: "Mystical Calendar",
+    icon: "🗓️",
+    url: "http://localhost:3002",
+    scope: "calendarApp",
+    module: "./App",
+  },
 ];
 
 /**

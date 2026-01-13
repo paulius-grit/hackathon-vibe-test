@@ -439,3 +439,46 @@ Fixed:
 The key fix: The container now explicitly registers its React in the global federation scope with the proper version structure, and the loader calls `init({})` then the remote's `importShared` can find React in `globalThis.__federation_shared__.default.react`.
 
 All packages rebuilt. Start both apps in preview mode to test.
+
+## User Prompt 11
+
+Okay, let's create another demo app and load it inside container app, now a bit more sophisticated one, it should include a calendar and when you click on the day it shows up on the right side with the name pretty printed in the widget and some random horoscope information for that day.
+
+## Copilot Response 11
+
+I'll create a new sophisticated demo app with a calendar and horoscope features. Let me set up the structure and implementation:
+
+Created package.json
+
+Now let me update the container app's remotes configuration to include the new calendar app:
+
+Perfect! I've created a sophisticated calendar app with the following features:
+
+🌟 Mystical Calendar App Features:
+Core Functionality:
+Interactive Calendar - Navigate between months with arrow buttons
+Day Selection - Click any day to see detailed information
+Current Day Highlighting - Today's date is prominently highlighted
+Visual Feedback - Hover effects and smooth transitions
+Day Details Panel:
+Pretty Printed Day Name - Shows full day name (Monday, Tuesday, etc.)
+Date Display - Large, styled date with month and year
+Random Horoscope - 12 unique mystical messages that appear randomly
+Beautiful Styling - Gradient backgrounds, emojis, and elegant typography
+Technical Implementation:
+Module Federation - Exposed as ./App on port 3002 with scope calendarApp
+React State Management - Manages current month/year and selected day
+Responsive Design - Two-column layout with calendar and details
+Async Bootstrap - Proper Module Federation initialization pattern
+Visual Design:
+Mystical Theme - Stars, crystal ball, and magical emojis
+Color-coded Days - Different colors for today, selected day, and regular days
+Smooth Animations - Hover effects and transitions for better UX
+Card-based Layout - Clean, modern cards with shadows and rounded corners
+The app is now configured in the container's remotes list and ready to be loaded. To test it:
+
+Run pnpm dev in the calendar-app directory (port 3002)
+Run the container app
+Navigate to /remote/calendar-app in the container
+Click on different days to see unique horoscope messages!
+The calendar generates random horoscope messages from a pool of 12 mystical predictions, so each day click will show different insights.
