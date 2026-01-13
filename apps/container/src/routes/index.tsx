@@ -1,4 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@mf-hub/ui";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -6,68 +13,120 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>Welcome to MF Hub</h1>
-      <p style={styles.description}>
-        This is the container application that hosts micro frontends using
-        Module Federation.
-      </p>
-
-      <div style={styles.card}>
-        <h2 style={styles.cardTitle}>Getting Started</h2>
-        <p style={styles.cardText}>
-          Select a micro app from the sidebar to load it dynamically. Each app
-          is loaded on-demand using Module Federation.
+    <div className="max-w-4xl mx-auto p-8">
+      {/* Hero Section */}
+      <div className="mb-12 opacity-0 animate-fade-in">
+        <h1 className="text-4xl font-bold tracking-tight mb-4">
+          Welcome to MF Hub
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-2xl">
+          This is the container application that hosts micro frontends using
+          Module Federation. Build scalable, independent applications that work
+          together seamlessly.
         </p>
       </div>
 
-      <div style={styles.card}>
-        <h2 style={styles.cardTitle}>Architecture</h2>
-        <ul style={styles.list}>
-          <li>📦 Module Federation for code sharing</li>
-          <li>🚀 Dynamic remote loading at runtime</li>
-          <li>🔄 TanStack Router for type-safe navigation</li>
-          <li>⚡ Vite for fast development</li>
-        </ul>
+      {/* Cards Grid */}
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card
+          className="opacity-0 animate-fade-in-up"
+          style={{ animationDelay: "100ms" }}
+        >
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-xl">🚀</span>
+              Getting Started
+            </CardTitle>
+            <CardDescription>
+              Learn how to use the micro frontend hub
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Select a micro app from the sidebar to load it dynamically. Each
+              app is loaded on-demand using Module Federation, ensuring fast
+              initial load times and optimal resource usage.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card
+          className="opacity-0 animate-fade-in-up"
+          style={{ animationDelay: "200ms" }}
+        >
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-xl">🏗️</span>
+              Architecture
+            </CardTitle>
+            <CardDescription>
+              Built with modern web technologies
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-3 text-sm">
+              <FeatureItem
+                icon="📦"
+                text="Module Federation for code sharing"
+              />
+              <FeatureItem icon="🔄" text="Dynamic remote loading at runtime" />
+              <FeatureItem
+                icon="🧭"
+                text="TanStack Router for type-safe navigation"
+              />
+              <FeatureItem icon="⚡" text="Vite for fast development" />
+            </ul>
+          </CardContent>
+        </Card>
+
+        <Card
+          className="md:col-span-2 opacity-0 animate-fade-in-up"
+          style={{ animationDelay: "300ms" }}
+        >
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-xl">✨</span>
+              Features
+            </CardTitle>
+            <CardDescription>
+              What makes this architecture powerful
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div className="p-4 rounded-lg bg-muted/50">
+                <h4 className="font-medium mb-1">Independent Deployment</h4>
+                <p className="text-sm text-muted-foreground">
+                  Deploy micro apps independently without rebuilding the host
+                </p>
+              </div>
+              <div className="p-4 rounded-lg bg-muted/50">
+                <h4 className="font-medium mb-1">Shared Dependencies</h4>
+                <p className="text-sm text-muted-foreground">
+                  React and other libraries are shared across all apps
+                </p>
+              </div>
+              <div className="p-4 rounded-lg bg-muted/50">
+                <h4 className="font-medium mb-1">Runtime Integration</h4>
+                <p className="text-sm text-muted-foreground">
+                  Load remotes dynamically based on API responses
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
 }
 
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    maxWidth: "800px",
-    margin: "0 auto",
-    padding: "2rem",
-  },
-  title: {
-    fontSize: "2.5rem",
-    marginBottom: "1rem",
-    color: "#1a1a1a",
-  },
-  description: {
-    fontSize: "1.1rem",
-    color: "#666",
-    marginBottom: "2rem",
-  },
-  card: {
-    background: "white",
-    borderRadius: "8px",
-    padding: "1.5rem",
-    marginBottom: "1rem",
-    boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-  },
-  cardTitle: {
-    fontSize: "1.25rem",
-    marginBottom: "0.75rem",
-    color: "#333",
-  },
-  cardText: {
-    color: "#666",
-    lineHeight: 1.6,
-  },
-  list: {
-    listStyle: "none",
-    padding: 0,
-  },
-};
+function FeatureItem({ icon, text }: { icon: string; text: string }) {
+  return (
+    <li className="flex items-center gap-3">
+      <span className="flex-shrink-0 w-6 h-6 rounded-md bg-muted flex items-center justify-center text-sm">
+        {icon}
+      </span>
+      <span className="text-muted-foreground">{text}</span>
+    </li>
+  );
+}

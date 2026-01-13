@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
+import "./index.css";
 
 /**
  * Standalone entry point for development.
@@ -14,8 +15,8 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <div style={{ padding: "2rem" }}>
-      <p style={{ marginBottom: "1rem", color: "#64748b", fontSize: "0.875rem" }}>
+    <div className="p-8">
+      <p className="mb-4 text-sm text-muted-foreground">
         ⚡ Running in standalone mode
       </p>
       <App />

@@ -22,6 +22,23 @@ This monorepo follows a modular architecture where:
 └── package.json            # Root package.json
 ```
 
+Launch apps:
+
+```pwsh
+pnpm install
+
+pnpm --filter @mf-hub/loader build
+
+# Terminal 1
+pnpm --filter @mf-hub/container build && pnpm --filter @mf-hub/container preview
+
+# Terminal 2
+pnpm --filter @mf-hub/demo-app build && pnpm --filter @mf-hub/demo-app preview
+
+# Terminal 3
+pnpm --filter @mf-hub/calendar-app build && pnpm --filter @mf-hub/calendar-app preview
+```
+
 ## Tech Stack
 
 - **Package Manager**: pnpm (workspaces)

@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { RemoteLoader } from "@/components/RemoteLoader";
 import { getRemoteByName } from "@/config/remotes";
+import { Card, CardContent, Skeleton } from "@mf-hub/ui";
 
 export const Route = createFileRoute("/remote/$name")({
   component: RemotePage,
@@ -15,59 +16,50 @@ function RemotePage() {
 
   if (!remote) {
     return (
-      <div style={styles.error}>
-        <h2>Remote Not Found</h2>
-        <p>The micro app "{name}" is not configured.</p>
+      <div className="flex items-center justify-center min-h-[60vh] p-8">
+        <Card className="max-w-md w-full">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center text-center">
+              <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-4">
+                <span className="text-2xl">🔍</span>
+              </div>
+              <h2 className="text-lg font-semibold mb-2">Remote Not Found</h2>
+              <p className="text-sm text-muted-foreground">
+                The micro app "{name}" is not configured.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   return (
-    <div style={styles.container}>
+    <div className="p-6 min-h-full">
       <RemoteLoader
         url={remote.url}
         scope={remote.scope}
         module={remote.module}
-        fallback={<LoadingSpinner name={name} />}
+        fallback={<LoadingSkeleton name={name} />}
       />
     </div>
   );
 }
 
-function LoadingSpinner({ name }: { name: string }) {
+function LoadingSkeleton({ name }: { name: string }) {
   return (
-    <div style={styles.loading}>
-      <div style={styles.spinner} />
-      <p>Loading {name}...</p>
+    <div className="flex flex-col items-center justify-center p-16">
+      <div className="space-y-4 w-full max-w-md">
+        <Skeleton className="h-8 w-3/4 mx-auto" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-5/6" />
+        <div className="pt-4">
+          <Skeleton className="h-32 w-full rounded-xl" />
+        </div>
+      </div>
+      <p className="mt-6 text-sm text-muted-foreground animate-pulse">
+        Loading {name}...
+      </p>
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    padding: "1rem",
-    minHeight: "100%",
-  },
-  loading: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "4rem",
-    color: "#666",
-  },
-  spinner: {
-    width: "40px",
-    height: "40px",
-    border: "3px solid #e0e0e0",
-    borderTopColor: "#3b82f6",
-    borderRadius: "50%",
-    animation: "spin 1s linear infinite",
-    marginBottom: "1rem",
-  },
-  error: {
-    padding: "2rem",
-    textAlign: "center",
-    color: "#dc2626",
-  },
-};

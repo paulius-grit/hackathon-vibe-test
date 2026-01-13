@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { registerSharedModules } from "@mf-hub/loader";
 import { routeTree } from "./routeTree.gen";
+import "./index.css";
 
 // Register shared modules for Module Federation
 // This makes the host's React available to remote apps

@@ -1,9 +1,19 @@
-import React, { useState } from 'react'
+import React, { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Badge,
+  Button,
+  cn,
+} from "@mf-hub/ui";
+import "./index.css";
 
 interface SelectedDay {
-  date: Date
-  dayName: string
-  horoscope: string
+  date: Date;
+  dayName: string;
+  horoscope: string;
 }
 
 const HOROSCOPE_MESSAGES = [
@@ -18,168 +28,147 @@ const HOROSCOPE_MESSAGES = [
   "Focus on balance - harmony between work and personal life awaits.",
   "An old dream may resurface with new possibilities attached.",
   "Your patience will be rewarded with something truly worthwhile.",
-  "Communication flows easily - express yourself with confidence."
-]
+  "Communication flows easily - express yourself with confidence.",
+];
 
-const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
-]
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+];
 
 const App: React.FC = () => {
-  const [currentDate, setCurrentDate] = useState(new Date())
-  const [selectedDay, setSelectedDay] = useState<SelectedDay | null>(null)
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedDay, setSelectedDay] = useState<SelectedDay | null>(null);
 
-  const today = new Date()
-  const year = currentDate.getFullYear()
-  const month = currentDate.getMonth()
-  
+  const today = new Date();
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
   // Get first day of month and number of days
-  const firstDayOfMonth = new Date(year, month, 1)
-  const lastDayOfMonth = new Date(year, month + 1, 0)
-  const firstDayWeekday = firstDayOfMonth.getDay()
-  const daysInMonth = lastDayOfMonth.getDate()
+  const firstDayOfMonth = new Date(year, month, 1);
+  const lastDayOfMonth = new Date(year, month + 1, 0);
+  const firstDayWeekday = firstDayOfMonth.getDay();
+  const daysInMonth = lastDayOfMonth.getDate();
 
   const goToPreviousMonth = () => {
-    setCurrentDate(new Date(year, month - 1, 1))
-  }
+    setCurrentDate(new Date(year, month - 1, 1));
+  };
 
   const goToNextMonth = () => {
-    setCurrentDate(new Date(year, month + 1, 1))
-  }
+    setCurrentDate(new Date(year, month + 1, 1));
+  };
 
   const handleDayClick = (day: number) => {
-    const selectedDate = new Date(year, month, day)
-    const dayName = selectedDate.toLocaleDateString('en-US', { weekday: 'long' })
-    const randomHoroscope = HOROSCOPE_MESSAGES[Math.floor(Math.random() * HOROSCOPE_MESSAGES.length)] ?? ''
-    
+    const selectedDate = new Date(year, month, day);
+    const dayName = selectedDate.toLocaleDateString("en-US", {
+      weekday: "long",
+    });
+    const randomHoroscope =
+      HOROSCOPE_MESSAGES[
+        Math.floor(Math.random() * HOROSCOPE_MESSAGES.length)
+      ] ?? "";
+
     setSelectedDay({
       date: selectedDate,
       dayName,
-      horoscope: randomHoroscope
-    })
-  }
+      horoscope: randomHoroscope,
+    });
+  };
 
   const renderCalendarDays = () => {
-    const days = []
-    
+    const days = [];
+
     // Add empty cells for days before the first day of the month
     for (let i = 0; i < firstDayWeekday; i++) {
-      days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>)
+      days.push(<div key={`empty-${i}`} className="aspect-square" />);
     }
-    
+
     // Add days of the month
     for (let day = 1; day <= daysInMonth; day++) {
-      const isToday = today.getDate() === day && 
-                     today.getMonth() === month && 
-                     today.getFullYear() === year
-      const isSelected = selectedDay && selectedDay.date.getDate() === day &&
-                        selectedDay.date.getMonth() === month &&
-                        selectedDay.date.getFullYear() === year
-      
+      const isToday =
+        today.getDate() === day &&
+        today.getMonth() === month &&
+        today.getFullYear() === year;
+      const isSelected =
+        selectedDay &&
+        selectedDay.date.getDate() === day &&
+        selectedDay.date.getMonth() === month &&
+        selectedDay.date.getFullYear() === year;
+
       days.push(
-        <div
+        <button
           key={day}
-          className={`calendar-day ${isToday ? 'today' : ''} ${isSelected ? 'selected' : ''}`}
           onClick={() => handleDayClick(day)}
+          className={cn(
+            "aspect-square flex items-center justify-center rounded-lg text-sm font-medium",
+            "transition-all duration-200 ease-out",
+            "hover:bg-accent hover:scale-105 active:scale-95",
+            isToday && !isSelected && "bg-primary text-primary-foreground",
+            isSelected && "bg-violet-600 text-white shadow-md",
+            !isToday && !isSelected && "bg-card border border-border"
+          )}
         >
           {day}
-        </div>
-      )
+        </button>
+      );
     }
-    
-    return days
-  }
+
+    return days;
+  };
 
   return (
-    <div style={{ 
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-      maxWidth: '900px',
-      margin: '0 auto',
-      padding: '20px'
-    }}>
-      <h1 style={{ 
-        textAlign: 'center', 
-        color: '#2c3e50',
-        marginBottom: '30px',
-        fontSize: '2rem'
-      }}>
-        🌟 Mystical Calendar 🌟
-      </h1>
-      
-      <div style={{ display: 'flex', gap: '30px', alignItems: 'flex-start' }}>
-        {/* Calendar Section */}
-        <div style={{ flex: 1 }}>
-          <div style={{ 
-            backgroundColor: '#f8f9fa',
-            borderRadius: '10px',
-            padding: '20px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-          }}>
-            {/* Calendar Header */}
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center',
-              marginBottom: '20px'
-            }}>
-              <button
-                onClick={goToPreviousMonth}
-                style={{
-                  background: '#3498db',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '5px',
-                  padding: '10px 15px',
-                  cursor: 'pointer',
-                  fontSize: '16px'
-                }}
-              >
-                ←
-              </button>
-              
-              <h2 style={{ 
-                margin: 0, 
-                color: '#2c3e50',
-                fontSize: '1.5rem'
-              }}>
-                {MONTHS[month]} {year}
-              </h2>
-              
-              <button
-                onClick={goToNextMonth}
-                style={{
-                  background: '#3498db',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '5px',
-                  padding: '10px 15px',
-                  cursor: 'pointer',
-                  fontSize: '16px'
-                }}
-              >
-                →
-              </button>
-            </div>
+    <div className="max-w-4xl mx-auto font-sans">
+      {/* Header */}
+      <div className="text-center mb-8 opacity-0 animate-fade-in">
+        <Badge className="mb-4 bg-violet-100 text-violet-700 hover:bg-violet-100">
+          🔮 Mystical Calendar
+        </Badge>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Discover Your Daily Insights
+        </h1>
+        <p className="text-muted-foreground mt-2">
+          Click on any day to reveal its mystical horoscope
+        </p>
+      </div>
 
+      {/* Main Content */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Calendar Card */}
+        <Card
+          className="opacity-0 animate-fade-in-up"
+          style={{ animationDelay: "100ms" }}
+        >
+          <CardHeader className="pb-4">
+            <div className="flex items-center justify-between">
+              <Button variant="outline" size="icon" onClick={goToPreviousMonth}>
+                ←
+              </Button>
+              <CardTitle className="text-lg">
+                {MONTHS[month]} {year}
+              </CardTitle>
+              <Button variant="outline" size="icon" onClick={goToNextMonth}>
+                →
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent>
             {/* Days of week header */}
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(7, 1fr)',
-              gap: '2px',
-              marginBottom: '10px'
-            }}>
-              {DAYS.map(day => (
-                <div 
+            <div className="grid grid-cols-7 gap-1 mb-2">
+              {DAYS.map((day) => (
+                <div
                   key={day}
-                  style={{
-                    textAlign: 'center',
-                    fontWeight: 'bold',
-                    padding: '10px',
-                    color: '#7f8c8d',
-                    fontSize: '14px'
-                  }}
+                  className="text-center text-xs font-medium text-muted-foreground py-2"
                 >
                   {day}
                 </div>
@@ -187,139 +176,104 @@ const App: React.FC = () => {
             </div>
 
             {/* Calendar grid */}
-            <div style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(7, 1fr)',
-              gap: '2px'
-            }}>
-              {renderCalendarDays()}
-            </div>
-          </div>
-        </div>
+            <div className="grid grid-cols-7 gap-1">{renderCalendarDays()}</div>
+          </CardContent>
+        </Card>
 
-        {/* Selected Day Info Section */}
-        <div style={{ flex: 1 }}>
-          <div style={{
-            backgroundColor: '#f8f9fa',
-            borderRadius: '10px',
-            padding: '20px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
-            minHeight: '300px'
-          }}>
+        {/* Selected Day Card */}
+        <Card
+          className="min-h-[350px] opacity-0 animate-fade-in-up"
+          style={{ animationDelay: "200ms" }}
+        >
+          <CardContent className="pt-6 h-full">
             {selectedDay ? (
-              <>
-                <h3 style={{ 
-                  color: '#2c3e50',
-                  marginBottom: '20px',
-                  fontSize: '1.3rem',
-                  textAlign: 'center'
-                }}>
-                  ✨ {selectedDay.dayName} ✨
-                </h3>
-                
-                <div style={{
-                  textAlign: 'center',
-                  marginBottom: '20px'
-                }}>
-                  <div style={{
-                    fontSize: '2rem',
-                    fontWeight: 'bold',
-                    color: '#e74c3c',
-                    marginBottom: '5px'
-                  }}>
+              <div
+                key={selectedDay.date.toISOString()}
+                className="flex flex-col items-center text-center h-full opacity-0 animate-scale-in"
+              >
+                {/* Day Name */}
+                <Badge variant="secondary" className="mb-4">
+                  ✨ {selectedDay.dayName}
+                </Badge>
+
+                {/* Date Display */}
+                <div className="mb-6">
+                  <div className="text-5xl font-bold text-violet-600 mb-1">
                     {selectedDay.date.getDate()}
                   </div>
-                  <div style={{
-                    color: '#7f8c8d',
-                    fontSize: '1rem'
-                  }}>
-                    {MONTHS[selectedDay.date.getMonth()]} {selectedDay.date.getFullYear()}
+                  <div className="text-muted-foreground">
+                    {MONTHS[selectedDay.date.getMonth()]}{" "}
+                    {selectedDay.date.getFullYear()}
                   </div>
                 </div>
 
-                <div style={{
-                  backgroundColor: '#ecf0f1',
-                  borderRadius: '8px',
-                  padding: '20px',
-                  border: '2px solid #bdc3c7'
-                }}>
-                  <h4 style={{ 
-                    color: '#8e44ad',
-                    marginBottom: '15px',
-                    textAlign: 'center'
-                  }}>
-                    🔮 Daily Horoscope 🔮
-                  </h4>
-                  <p style={{
-                    lineHeight: '1.6',
-                    color: '#2c3e50',
-                    fontSize: '1rem',
-                    fontStyle: 'italic',
-                    textAlign: 'center',
-                    margin: 0
-                  }}>
-                    "{selectedDay.horoscope}"
-                  </p>
+                {/* Horoscope Card */}
+                <div className="flex-1 w-full">
+                  <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-6 border border-violet-100">
+                    <h4 className="text-violet-700 font-semibold mb-3 flex items-center justify-center gap-2">
+                      <span>🔮</span>
+                      Daily Horoscope
+                      <span>🔮</span>
+                    </h4>
+                    <p className="text-foreground leading-relaxed italic">
+                      "{selectedDay.horoscope}"
+                    </p>
+                  </div>
                 </div>
-              </>
+              </div>
             ) : (
-              <div style={{
-                textAlign: 'center',
-                color: '#95a5a6',
-                fontSize: '1.1rem',
-                marginTop: '50px'
-              }}>
-                <div style={{ fontSize: '3rem', marginBottom: '20px' }}>🗓️</div>
-                <p>Click on any day to reveal its mystical insights!</p>
+              <div className="flex flex-col items-center justify-center h-full text-center">
+                <div className="text-6xl mb-4">🗓️</div>
+                <p className="text-muted-foreground">
+                  Click on any day to reveal its mystical insights!
+                </p>
               </div>
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <style>{`
-        .calendar-day {
-          aspect-ratio: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: white;
-          border: 1px solid #e1e8ed;
-          cursor: pointer;
-          font-size: 14px;
-          font-weight: 500;
-          transition: all 0.2s ease;
-        }
-        
-        .calendar-day:hover:not(.empty) {
-          background: #e3f2fd;
-          transform: scale(1.05);
-        }
-        
-        .calendar-day.empty {
-          background: transparent;
-          border: none;
-          cursor: default;
-        }
-        
-        .calendar-day.today {
-          background: #2196f3;
-          color: white;
-          font-weight: bold;
-        }
-        
-        .calendar-day.selected {
-          background: #e74c3c;
-          color: white;
-          font-weight: bold;
-        }
-        
-        .calendar-day.today.selected {
-          background: #9c27b0;
-        }
-      `}</style>
+      {/* Module Info Card */}
+      <Card
+        className="mt-6 opacity-0 animate-fade-in-up"
+        style={{ animationDelay: "300ms" }}
+      >
+        <CardHeader>
+          <CardTitle>Module Info</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <InfoItem label="Scope" value="calendarApp" />
+            <InfoItem label="Module" value="./App" />
+            <InfoItem label="Port" value="3002" />
+            <InfoItem label="Shared" value="react, react-dom" />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Footer */}
+      <div
+        className="text-center py-6 text-sm text-muted-foreground opacity-0 animate-fade-in"
+        style={{ animationDelay: "400ms" }}
+      >
+        <p>
+          ✅ Successfully loaded from{" "}
+          <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
+            http://localhost:3002
+          </code>
+        </p>
+      </div>
     </div>
-  )
+  );
+};
+
+function InfoItem({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex flex-col gap-1 p-3 rounded-lg bg-muted/50">
+      <span className="text-xs font-medium text-muted-foreground">{label}</span>
+      <code className="text-sm font-mono">{value}</code>
+    </div>
+  );
 }
 
-export default App
+export default App;

@@ -1,5 +1,6 @@
 import { useState, useEffect, type ReactNode, type ComponentType } from "react";
 import { loadRemoteByUrl, type LoadRemoteResult } from "@mf-hub/loader";
+import { Card, CardContent, Skeleton } from "@mf-hub/ui";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 interface RemoteLoaderProps {
@@ -85,9 +86,18 @@ export function RemoteLoader({
 
 function DefaultFallback() {
   return (
-    <div style={styles.container}>
-      <div style={styles.spinner} />
-      <p style={styles.text}>Loading micro app...</p>
+    <div className="flex flex-col items-center justify-center p-16">
+      <div className="space-y-4 w-full max-w-md">
+        <Skeleton className="h-8 w-3/4 mx-auto" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-5/6" />
+        <div className="pt-4">
+          <Skeleton className="h-32 w-full rounded-xl" />
+        </div>
+      </div>
+      <p className="mt-6 text-sm text-muted-foreground animate-pulse">
+        Loading micro app...
+      </p>
     </div>
   );
 }
@@ -100,68 +110,36 @@ interface ErrorFallbackProps {
 
 function DefaultErrorFallback({ error, url, scope }: ErrorFallbackProps) {
   return (
-    <div style={styles.errorContainer}>
-      <div style={styles.errorIcon}>⚠️</div>
-      <h3 style={styles.errorTitle}>Failed to load micro app</h3>
-      <p style={styles.errorText}>{error.message}</p>
-      <div style={styles.errorDetails}>
-        <p>
-          <strong>Scope:</strong> {scope}
-        </p>
-        <p>
-          <strong>URL:</strong> {url}
-        </p>
-      </div>
+    <div className="flex items-center justify-center p-16">
+      <Card className="max-w-lg w-full border-destructive/20">
+        <CardContent className="pt-6">
+          <div className="flex flex-col items-center text-center">
+            <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center mb-4">
+              <span className="text-2xl">⚠️</span>
+            </div>
+            <h3 className="text-lg font-semibold text-destructive mb-2">
+              Failed to load micro app
+            </h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              {error.message}
+            </p>
+            <div className="w-full bg-muted rounded-lg p-4 text-left">
+              <div className="space-y-2 text-sm">
+                <p>
+                  <span className="font-medium text-foreground">Scope:</span>{" "}
+                  <code className="text-muted-foreground">{scope}</code>
+                </p>
+                <p>
+                  <span className="font-medium text-foreground">URL:</span>{" "}
+                  <code className="text-muted-foreground text-xs break-all">
+                    {url}
+                  </code>
+                </p>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "4rem",
-    color: "#64748b",
-  },
-  spinner: {
-    width: "48px",
-    height: "48px",
-    border: "4px solid #e2e8f0",
-    borderTopColor: "#3b82f6",
-    borderRadius: "50%",
-    animation: "spin 1s linear infinite",
-    marginBottom: "1rem",
-  },
-  text: {
-    fontSize: "1rem",
-  },
-  errorContainer: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "4rem",
-    textAlign: "center",
-  },
-  errorIcon: {
-    fontSize: "3rem",
-    marginBottom: "1rem",
-  },
-  errorTitle: {
-    color: "#dc2626",
-    marginBottom: "0.5rem",
-  },
-  errorText: {
-    color: "#64748b",
-    marginBottom: "1rem",
-  },
-  errorDetails: {
-    backgroundColor: "#f1f5f9",
-    padding: "1rem",
-    borderRadius: "8px",
-    fontSize: "0.875rem",
-    color: "#475569",
-  },
-};
