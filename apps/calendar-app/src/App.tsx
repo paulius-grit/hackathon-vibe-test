@@ -7,6 +7,12 @@ import {
   Badge,
   Button,
   cn,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  Star,
+  Sparkles,
+  CheckCircle2,
 } from "@mf-hub/ui";
 import "./index.css";
 
@@ -132,7 +138,7 @@ const App: React.FC = () => {
       {/* Header */}
       <div className="text-center mb-8 opacity-0 animate-fade-in">
         <Badge className="mb-4 bg-violet-100 text-violet-700 hover:bg-violet-100">
-          🔮 Mystical Calendar
+          <Sparkles className="w-3 h-3 mr-1" /> Mystical Calendar
         </Badge>
         <h1 className="text-3xl font-bold tracking-tight">
           Discover Your Daily Insights
@@ -152,13 +158,13 @@ const App: React.FC = () => {
           <CardHeader className="pb-4">
             <div className="flex items-center justify-between">
               <Button variant="outline" size="icon" onClick={goToPreviousMonth}>
-                ←
+                <ChevronLeft className="w-4 h-4" />
               </Button>
               <CardTitle className="text-lg">
                 {MONTHS[month]} {year}
               </CardTitle>
               <Button variant="outline" size="icon" onClick={goToNextMonth}>
-                →
+                <ChevronRight className="w-4 h-4" />
               </Button>
             </div>
           </CardHeader>
@@ -193,7 +199,7 @@ const App: React.FC = () => {
               >
                 {/* Day Name */}
                 <Badge variant="secondary" className="mb-4">
-                  ✨ {selectedDay.dayName}
+                  <Star className="w-3 h-3 mr-1" /> {selectedDay.dayName}
                 </Badge>
 
                 {/* Date Display */}
@@ -211,9 +217,9 @@ const App: React.FC = () => {
                 <div className="flex-1 w-full">
                   <div className="bg-gradient-to-br from-violet-50 to-purple-50 rounded-xl p-6 border border-violet-100">
                     <h4 className="text-violet-700 font-semibold mb-3 flex items-center justify-center gap-2">
-                      <span>🔮</span>
+                      <Sparkles className="w-4 h-4" />
                       Daily Horoscope
-                      <span>🔮</span>
+                      <Sparkles className="w-4 h-4" />
                     </h4>
                     <p className="text-foreground leading-relaxed italic">
                       "{selectedDay.horoscope}"
@@ -223,7 +229,7 @@ const App: React.FC = () => {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center h-full text-center">
-                <div className="text-6xl mb-4">🗓️</div>
+                <Calendar className="w-16 h-16 mb-4 text-muted-foreground" />
                 <p className="text-muted-foreground">
                   Click on any day to reveal its mystical insights!
                 </p>
@@ -256,8 +262,9 @@ const App: React.FC = () => {
         className="text-center py-6 text-sm text-muted-foreground opacity-0 animate-fade-in"
         style={{ animationDelay: "400ms" }}
       >
-        <p>
-          ✅ Successfully loaded from{" "}
+        <p className="flex items-center justify-center gap-1.5">
+          <CheckCircle2 className="w-4 h-4 text-green-500" />
+          Successfully loaded from{" "}
           <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
             http://localhost:3002
           </code>

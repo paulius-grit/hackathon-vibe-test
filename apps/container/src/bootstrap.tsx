@@ -2,6 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { registerSharedModules } from "@mf-hub/loader";
+import { LoadedAppsProvider } from "./context/LoadedAppsContext";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
 
@@ -38,6 +39,8 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <LoadedAppsProvider>
+      <RouterProvider router={router} />
+    </LoadedAppsProvider>
   </StrictMode>
 );

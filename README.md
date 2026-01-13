@@ -39,6 +39,27 @@ pnpm --filter @mf-hub/demo-app build && pnpm --filter @mf-hub/demo-app preview
 pnpm --filter @mf-hub/calendar-app build && pnpm --filter @mf-hub/calendar-app preview
 ```
 
+One-shot build all;
+
+```pwsh
+pnpm --filter @mf-hub/loader build ; pnpm --filter @mf-hub/calendar-app build ; pnpm --filter @mf-hub/demo-app build ; pnpm --filter @mf-hub/container build
+```
+
+```pwsh
+# Terminal 1
+pnpm --filter @mf-hub/container preview
+```
+
+```pwsh
+# Terminal 2
+pnpm --filter @mf-hub/demo-app preview
+```
+
+```pwsh
+# Terminal 3
+pnpm --filter @mf-hub/calendar-app preview
+```
+
 ## Tech Stack
 
 - **Package Manager**: pnpm (workspaces)

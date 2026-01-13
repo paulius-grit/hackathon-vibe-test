@@ -20,7 +20,7 @@ const remoteApps: RemoteAppConfig[] = [
   {
     name: "demo-app",
     title: "Demo Application",
-    icon: "🎯",
+    icon: "Target",
     url: "http://localhost:3001",
     scope: "demo-app",
     module: "./App",
@@ -28,7 +28,7 @@ const remoteApps: RemoteAppConfig[] = [
   {
     name: "calendar-app",
     title: "Mystical Calendar",
-    icon: "🗓️",
+    icon: "Calendar",
     url: "http://localhost:3002",
     scope: "calendarApp",
     module: "./App",

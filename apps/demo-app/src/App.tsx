@@ -8,6 +8,10 @@ import {
   Badge,
   Button,
   Separator,
+  Target,
+  Minus,
+  Plus,
+  CheckCircle2,
 } from "@mf-hub/ui";
 import "./index.css";
 
@@ -23,7 +27,7 @@ export default function App() {
       {/* Header */}
       <div className="text-center mb-8 opacity-0 animate-fade-in">
         <Badge className="mb-4 bg-blue-100 text-blue-700 hover:bg-blue-100">
-          🎯 Remote App
+          <Target className="w-3 h-3 mr-1" /> Remote App
         </Badge>
         <h1 className="text-3xl font-bold tracking-tight mb-2">
           Demo Application
@@ -49,10 +53,10 @@ export default function App() {
             <Button
               variant="outline"
               size="icon"
-              className="h-12 w-12 text-xl"
+              className="h-12 w-12"
               onClick={() => setCount((c) => c - 1)}
             >
-              −
+              <Minus className="w-5 h-5" />
             </Button>
             <span className="text-4xl font-semibold min-w-[80px] text-center tabular-nums">
               {count}
@@ -60,10 +64,10 @@ export default function App() {
             <Button
               variant="outline"
               size="icon"
-              className="h-12 w-12 text-xl"
+              className="h-12 w-12"
               onClick={() => setCount((c) => c + 1)}
             >
-              +
+              <Plus className="w-5 h-5" />
             </Button>
           </div>
         </CardContent>
@@ -95,8 +99,9 @@ export default function App() {
         className="text-center py-4 text-sm text-muted-foreground opacity-0 animate-fade-in"
         style={{ animationDelay: "300ms" }}
       >
-        <p>
-          ✅ Successfully loaded from{" "}
+        <p className="flex items-center justify-center gap-1.5">
+          <CheckCircle2 className="w-4 h-4 text-green-500" />
+          Successfully loaded from{" "}
           <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
             http://localhost:3001
           </code>

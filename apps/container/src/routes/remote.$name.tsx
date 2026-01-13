@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { RemoteLoader } from "@/components/RemoteLoader";
 import { getRemoteByName } from "@/config/remotes";
+import { useLoadedApps } from "@/context/LoadedAppsContext";
 import { Card, CardContent, Skeleton } from "@mf-hub/ui";
 
 export const Route = createFileRoute("/remote/$name")({
@@ -13,6 +15,18 @@ export const Route = createFileRoute("/remote/$name")({
 
 function RemotePage() {
   const { remote, name } = Route.useLoaderData();
+  const { addLoadedApp, setActiveApp } = useLoadedApps();
+
+  useEffect(() => {
+    if (remote) {
+      addLoadedApp({
+        name: remote.name,
+        title: remote.title ?? remote.name,
+        icon: remote.icon ?? "📦",
+      });
+      setActiveApp(remote.name);
+    }
+  }, [remote, addLoadedApp, setActiveApp]);
 
   if (!remote) {
     return (

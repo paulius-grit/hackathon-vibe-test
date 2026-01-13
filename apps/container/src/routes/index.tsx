@@ -5,6 +5,13 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  Rocket,
+  Box,
+  RefreshCw,
+  Compass,
+  Zap,
+  Sparkles,
+  type LucideIcon,
 } from "@mf-hub/ui";
 
 export const Route = createFileRoute("/")({
@@ -34,7 +41,7 @@ function HomePage() {
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <span className="text-xl">🚀</span>
+              <Rocket className="w-5 h-5 text-primary" />
               Getting Started
             </CardTitle>
             <CardDescription>
@@ -56,7 +63,7 @@ function HomePage() {
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <span className="text-xl">🏗️</span>
+              <Box className="w-5 h-5 text-primary" />
               Architecture
             </CardTitle>
             <CardDescription>
@@ -66,15 +73,18 @@ function HomePage() {
           <CardContent>
             <ul className="space-y-3 text-sm">
               <FeatureItem
-                icon="📦"
+                Icon={Box}
                 text="Module Federation for code sharing"
               />
-              <FeatureItem icon="🔄" text="Dynamic remote loading at runtime" />
               <FeatureItem
-                icon="🧭"
+                Icon={RefreshCw}
+                text="Dynamic remote loading at runtime"
+              />
+              <FeatureItem
+                Icon={Compass}
                 text="TanStack Router for type-safe navigation"
               />
-              <FeatureItem icon="⚡" text="Vite for fast development" />
+              <FeatureItem Icon={Zap} text="Vite for fast development" />
             </ul>
           </CardContent>
         </Card>
@@ -85,7 +95,7 @@ function HomePage() {
         >
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <span className="text-xl">✨</span>
+              <Sparkles className="w-5 h-5 text-primary" />
               Features
             </CardTitle>
             <CardDescription>
@@ -120,11 +130,11 @@ function HomePage() {
   );
 }
 
-function FeatureItem({ icon, text }: { icon: string; text: string }) {
+function FeatureItem({ Icon, text }: { Icon: LucideIcon; text: string }) {
   return (
     <li className="flex items-center gap-3">
-      <span className="flex-shrink-0 w-6 h-6 rounded-md bg-muted flex items-center justify-center text-sm">
-        {icon}
+      <span className="flex-shrink-0 w-6 h-6 rounded-md bg-muted flex items-center justify-center">
+        <Icon className="w-3.5 h-3.5 text-muted-foreground" />
       </span>
       <span className="text-muted-foreground">{text}</span>
     </li>
