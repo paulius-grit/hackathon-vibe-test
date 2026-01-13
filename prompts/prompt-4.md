@@ -1,0 +1,1 @@
+Before we move on with container. I forgot to mention that all apps apart from container will be loaded asynchronously without knowing their name. API (which right now will be mocked by me) will be returning urls from application made using Module Federation to load them. Is this handled by the loading library?
