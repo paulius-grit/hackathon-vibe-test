@@ -52,9 +52,10 @@ function RemotePage() {
   return (
     <div className="p-6 min-h-full">
       <RemoteLoader
+        name={remote.name}
         url={remote.url}
         scope={remote.scope}
-        module={remote.module}
+        module="./routes"
         fallback={<LoadingSkeleton name={name} />}
       />
     </div>

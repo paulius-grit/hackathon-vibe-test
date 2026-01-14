@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@mf-hub/loader": "workspace:*",
+    "@mf-hub/router": "workspace:*",
     "@mf-hub/ui": "workspace:*",
     "@tanstack/react-router": "^1.45.0",
     "react": "^18.3.1",

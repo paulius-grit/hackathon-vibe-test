@@ -10,7 +10,7 @@ export default defineConfig({
       name: "demo-app",
       filename: "remoteEntry.js",
       exposes: {
-        "./App": "./src/App.tsx",
+        "./routes": "./src/routes.ts",
       },
       shared: {
         react: {

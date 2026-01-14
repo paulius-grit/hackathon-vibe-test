@@ -1,29 +1,48 @@
-import { useState, useEffect, type ReactNode, type ComponentType } from "react";
+import { useState, useEffect, type ReactNode } from "react";
 import { loadRemoteByUrl, type LoadRemoteResult } from "@mf-hub/loader";
+import {
+  MicroAppRenderer,
+  type MicroAppModule,
+  type MicroAppRouteConfig,
+} from "@mf-hub/router";
 import { Card, CardContent, Skeleton } from "@mf-hub/ui";
 import { ErrorBoundary } from "./ErrorBoundary";
 
 interface RemoteLoaderProps {
+  /** Name of the app (used for routing base path) */
+  name: string;
+  /** URL where the remote is hosted */
   url: string;
+  /** Federation scope name */
   scope: string;
+  /** Module to load (defaults to ./routes) */
   module?: string;
+  /** Loading fallback */
   fallback?: ReactNode;
+  /** Error fallback */
   errorFallback?: ReactNode;
+  /** Initial path within the micro-app */
+  initialPath?: string;
 }
 
 type RemoteState =
   | { status: "loading" }
-  | { status: "loaded"; Component: ComponentType }
+  | { status: "loaded"; routeConfig: MicroAppRouteConfig }
   | { status: "error"; error: Error };
 
 export function RemoteLoader({
+  name,
   url,
   scope,
-  module = "./App",
+  module = "./routes",
   fallback = <DefaultFallback />,
   errorFallback,
+  initialPath = "/",
 }: RemoteLoaderProps) {
   const [state, setState] = useState<RemoteState>({ status: "loading" });
+
+  // Base path where this micro-app is mounted
+  const basePath = `/apps/${name}`;
 
   useEffect(() => {
     let cancelled = false;
@@ -31,7 +50,7 @@ export function RemoteLoader({
     const load = async () => {
       setState({ status: "loading" });
 
-      const result: LoadRemoteResult<ComponentType> = await loadRemoteByUrl(
+      const result: LoadRemoteResult<MicroAppModule> = await loadRemoteByUrl(
         url,
         scope,
         module
@@ -40,7 +59,26 @@ export function RemoteLoader({
       if (cancelled) return;
 
       if (result.success) {
-        setState({ status: "loaded", Component: result.module });
+        const microAppModule = result.module;
+
+        // Validate that it has the expected shape
+        if (!microAppModule?.routeConfig?.routes) {
+          setState({
+            status: "error",
+            error: new Error(
+              `Remote "${scope}" does not export a valid routeConfig. ` +
+                `Expected { routeConfig: { routes: [...] } }`
+            ),
+          });
+          return;
+        }
+
+        // Run init if provided
+        if (microAppModule.init) {
+          await microAppModule.init({ basePath });
+        }
+
+        setState({ status: "loaded", routeConfig: microAppModule.routeConfig });
       } else {
         setState({ status: "error", error: result.error });
       }
@@ -51,7 +89,7 @@ export function RemoteLoader({
     return () => {
       cancelled = true;
     };
-  }, [url, scope, module]);
+  }, [url, scope, module, basePath]);
 
   if (state.status === "loading") {
     return <>{fallback}</>;
@@ -67,8 +105,6 @@ export function RemoteLoader({
     );
   }
 
-  const { Component } = state;
-
   return (
     <ErrorBoundary
       fallback={
@@ -79,7 +115,12 @@ export function RemoteLoader({
         />
       }
     >
-      <Component />
+      <MicroAppRenderer
+        basePath={basePath}
+        routeConfig={state.routeConfig}
+        initialPath={initialPath}
+        fallback={fallback}
+      />
     </ErrorBoundary>
   );
 }

@@ -8,6 +8,7 @@
     "preview": "vite preview --port 3002"
   },
   "dependencies": {
+    "@mf-hub/router": "workspace:*",
     "@mf-hub/ui": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
