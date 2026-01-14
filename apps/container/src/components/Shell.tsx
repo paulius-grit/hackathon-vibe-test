@@ -47,7 +47,7 @@ export function Shell({ children }: ShellProps) {
 
   const handleTabClick = (appName: string) => {
     setActiveApp(appName);
-    navigate({ to: "/apps/$name", params: { name: appName } });
+    navigate({ to: "/apps/$name/$", params: { name: appName, _splat: "" } });
   };
 
   const handleTabClose = (appName: string) => {
@@ -59,7 +59,10 @@ export function Shell({ children }: ShellProps) {
       if (loadedApps.length > 1) {
         const nextApp = loadedApps[appIndex === 0 ? 1 : appIndex - 1];
         if (nextApp) {
-          navigate({ to: "/apps/$name", params: { name: nextApp.name } });
+          navigate({
+            to: "/apps/$name/$",
+            params: { name: nextApp.name, _splat: "" },
+          });
         }
       } else {
         navigate({ to: "/" });
@@ -142,8 +145,8 @@ export function Shell({ children }: ShellProps) {
             remotes.map((remote) => (
               <NavLink
                 key={remote.name}
-                to="/apps/$name"
-                params={{ name: remote.name }}
+                to="/apps/$name/$"
+                params={{ name: remote.name, _splat: "" }}
                 iconName={remote.icon ?? "Package"}
                 isCollapsed={isCollapsed}
                 isActive={currentPath.startsWith(`/apps/${remote.name}`)}

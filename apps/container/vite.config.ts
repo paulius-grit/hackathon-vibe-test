@@ -15,7 +15,8 @@ export default defineConfig({
       remotes: {
         // This placeholder is never actually loaded - it just triggers proper share scope generation
         __placeholder__: {
-          external: "http://localhost:9999/__placeholder__/assets/remoteEntry.js",
+          external:
+            "http://localhost:9999/__placeholder__/assets/remoteEntry.js",
           format: "esm",
           from: "vite",
         },

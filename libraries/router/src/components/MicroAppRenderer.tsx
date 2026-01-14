@@ -11,6 +11,13 @@ export interface MicroAppRendererProps extends MicroAppProps {
   fallback?: ReactNode;
   /** Initial relative path within the micro-app */
   initialPath?: string;
+  /**
+   * Whether to use browser history (embedded mode) or memory history (standalone mode).
+   * - When true: Uses browser history with basepath, URLs reflect micro-app navigation
+   * - When false: Uses memory history, micro-app routing is isolated from browser URL
+   * @default true
+   */
+  useBrowserHistory?: boolean;
 }
 
 /**
@@ -22,6 +29,7 @@ export function MicroAppRenderer({
   routeConfig,
   fallback,
   initialPath = "/",
+  useBrowserHistory = true,
   containerProps: _containerProps,
 }: MicroAppRendererProps) {
   // Create router instance for this micro-app
@@ -30,8 +38,9 @@ export function MicroAppRenderer({
       config: routeConfig,
       basePath,
       initialPath,
+      useBrowserHistory,
     });
-  }, [routeConfig, basePath, initialPath]);
+  }, [routeConfig, basePath, initialPath, useBrowserHistory]);
 
   return (
     <BasePathProvider basePath={basePath}>

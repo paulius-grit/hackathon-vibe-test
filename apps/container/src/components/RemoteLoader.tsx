@@ -21,8 +21,10 @@ interface RemoteLoaderProps {
   fallback?: ReactNode;
   /** Error fallback */
   errorFallback?: ReactNode;
-  /** Initial path within the micro-app */
+  /** Initial path within the micro-app (extracted from URL splat) */
   initialPath?: string;
+  /** Whether to use browser history (default: true for URL sync) */
+  useBrowserHistory?: boolean;
 }
 
 type RemoteState =
@@ -38,6 +40,7 @@ export function RemoteLoader({
   fallback = <DefaultFallback />,
   errorFallback,
   initialPath = "/",
+  useBrowserHistory = true,
 }: RemoteLoaderProps) {
   const [state, setState] = useState<RemoteState>({ status: "loading" });
 
@@ -119,6 +122,7 @@ export function RemoteLoader({
         basePath={basePath}
         routeConfig={state.routeConfig}
         initialPath={initialPath}
+        useBrowserHistory={useBrowserHistory}
         fallback={fallback}
       />
     </ErrorBoundary>

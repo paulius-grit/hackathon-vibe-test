@@ -3,6 +3,7 @@ import {
   createRoute,
   createRouter,
   createMemoryHistory,
+  createBrowserHistory,
   type Router,
   type AnyRoute,
   type RouteComponent,
@@ -19,6 +20,13 @@ export interface CreateMicroRouterOptions {
   basePath: string;
   /** Initial path to navigate to (relative to basePath) */
   initialPath?: string;
+  /**
+   * Whether to use browser history (embedded mode) or memory history (standalone mode).
+   * - When true: Uses browser history with basepath, URLs reflect micro-app navigation
+   * - When false: Uses memory history, micro-app routing is isolated from browser URL
+   * @default true
+   */
+  useBrowserHistory?: boolean;
 }
 
 /**
@@ -53,13 +61,24 @@ function buildRouteTree(
 
 /**
  * Creates a TanStack Router instance for a micro-app.
- * Uses memory history so the micro-app manages its own routing
- * while the container manages the browser URL.
+ *
+ * By default, uses browser history with basepath so that:
+ * - Micro-app URLs are reflected in the browser (e.g., /apps/demo-app/info)
+ * - The container can synchronize with micro-app navigation
+ * - Deep linking works correctly
+ *
+ * For standalone development, you can use memory history which isolates
+ * the micro-app routing from the browser URL.
  */
 export function createMicroRouter(
   options: CreateMicroRouterOptions
 ): Router<AnyRoute> {
-  const { config, basePath, initialPath = "/" } = options;
+  const {
+    config,
+    basePath,
+    initialPath = "/",
+    useBrowserHistory = true,
+  } = options;
 
   // Create root route with optional layout
   const rootRoute = createRootRoute({
@@ -72,16 +91,20 @@ export function createMicroRouter(
   const routeTree = buildRouteTree(config.routes, rootRoute);
   const routeTreeWithChildren = rootRoute.addChildren(routeTree);
 
-  // Create memory history for isolation
-  const memoryHistory = createMemoryHistory({
-    initialEntries: [initialPath],
-  });
+  // Determine which history to use
+  const history = useBrowserHistory
+    ? createBrowserHistory()
+    : createMemoryHistory({
+        initialEntries: [initialPath],
+      });
 
-  // Create and return router
+  // Create router with or without basepath depending on mode
+  // For browser history, use basepath so URLs are prefixed correctly
+  // For memory history, no basepath needed as we're isolated
   const router = createRouter({
     routeTree: routeTreeWithChildren,
-    history: memoryHistory,
-    basepath: basePath,
+    history,
+    basepath: useBrowserHistory ? basePath : undefined,
   });
 
   return router;

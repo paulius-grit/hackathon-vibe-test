@@ -4,11 +4,7 @@ import type {
   LoadRemoteOptions,
   RemoteAppDescriptor,
 } from "./types";
-import {
-  getRemoteConfig,
-  hasRemote,
-  updateRemoteStatus,
-} from "./registry";
+import { getRemoteConfig, hasRemote, updateRemoteStatus } from "./registry";
 
 // Config type for federation remote
 export interface FederationRemoteConfig {
@@ -31,16 +27,16 @@ let federationMethods: FederationMethods | null = null;
 /**
  * Initialize the loader with federation methods from the container app
  * Call this from your container's bootstrap.tsx after importing from virtual:__federation__
- * 
+ *
  * @example
  * ```ts
- * import { 
+ * import {
  *   __federation_method_setRemote,
- *   __federation_method_getRemote, 
- *   __federation_method_unwrapDefault 
+ *   __federation_method_getRemote,
+ *   __federation_method_unwrapDefault
  * } from "virtual:__federation__";
  * import { initFederation } from "@mf-hub/loader";
- * 
+ *
  * initFederation({
  *   setRemote: __federation_method_setRemote,
  *   getRemote: __federation_method_getRemote,
@@ -79,7 +75,10 @@ const defaultOptions: Required<LoadRemoteOptions> = {
  */
 const createTimeout = (ms: number): Promise<never> => {
   return new Promise((_, reject) => {
-    setTimeout(() => reject(new Error(`Remote loading timed out after ${ms}ms`)), ms);
+    setTimeout(
+      () => reject(new Error(`Remote loading timed out after ${ms}ms`)),
+      ms
+    );
   });
 };
 
@@ -106,17 +105,17 @@ const ensureRemoteRegistered = (name: string, url: string): void => {
   if (!federationMethods) {
     throw new Error("Federation not initialized. Call initFederation() first.");
   }
-  
+
   if (registeredRemotes.has(name)) {
     return;
   }
-  
+
   federationMethods.setRemote(name, {
     url: buildRemoteEntryUrl(url),
     format: "esm",
     from: "vite",
   });
-  
+
   registeredRemotes.add(name);
 };
 
@@ -150,7 +149,9 @@ export const loadRemoteByConfig = async <T = unknown>(
   if (!federationMethods) {
     return {
       success: false,
-      error: new Error("Federation not initialized. Call initFederation() first."),
+      error: new Error(
+        "Federation not initialized. Call initFederation() first."
+      ),
     };
   }
 
@@ -178,20 +179,23 @@ export const loadRemoteByConfig = async <T = unknown>(
       const loadPromise = (async () => {
         // Register the remote with federation runtime
         ensureRemoteRegistered(scope, url);
-        
+
         // Ensure the remote is initialized (loads remoteEntry.js and initializes share scope)
         await federationMethods!.ensure(scope);
-        
+
         // Use federation's getRemote to load the module
         const remoteModule = await federationMethods!.getRemote(scope, module);
-        
+
         // Unwrap the default export
         const unwrapped = federationMethods!.unwrapDefault(remoteModule);
-        
+
         return unwrapped as T;
       })();
 
-      const result = await Promise.race([loadPromise, createTimeout(opts.timeout)]);
+      const result = await Promise.race([
+        loadPromise,
+        createTimeout(opts.timeout),
+      ]);
 
       // Cache the result
       moduleCache.set(cacheKey, result);

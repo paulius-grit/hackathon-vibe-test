@@ -38,5 +38,7 @@ declare module "virtual:__federation__" {
    * Ensure a remote is initialized (loads remoteEntry.js and initializes share scope)
    * Must be called after setRemote and before getRemote
    */
-  export const __federation_method_ensure: (remoteName: string) => Promise<unknown>;
+  export const __federation_method_ensure: (
+    remoteName: string
+  ) => Promise<unknown>;
 }

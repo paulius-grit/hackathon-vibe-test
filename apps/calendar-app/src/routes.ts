@@ -1,6 +1,7 @@
 import { defineRoutes, type MicroAppModule } from "@mf-hub/router";
 import App from "./App";
 import InfoPage from "./pages/InfoPage";
+import { MicroNotFoundPage } from "./components/MicroNotFoundPage";
 
 /**
  * Route configuration for calendar-app
@@ -17,6 +18,7 @@ export const routeConfig = defineRoutes({
       component: InfoPage,
     },
   ],
+  notFoundComponent: MicroNotFoundPage,
 });
 
 /**

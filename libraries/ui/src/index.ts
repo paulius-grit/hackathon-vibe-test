@@ -22,6 +22,10 @@ export {
   type TabsTriggerProps,
   type TabsContentProps,
 } from "./components/Tabs";
+export {
+  NotFoundPage,
+  type NotFoundPageProps,
+} from "./components/NotFoundPage";
 
 // Icons - re-export from lucide-react for convenience
 export {

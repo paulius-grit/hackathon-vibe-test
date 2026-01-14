@@ -5,14 +5,18 @@ import { useRemote } from "@/context/RemotesContext";
 import { useLoadedApps } from "@/context/LoadedAppsContext";
 import { Card, CardContent, Skeleton } from "@mf-hub/ui";
 
-export const Route = createFileRoute("/apps/$name")({
+export const Route = createFileRoute("/apps/$name/$")({
   component: RemotePage,
 });
 
 function RemotePage() {
-  const { name } = Route.useParams();
+  const { name, _splat } = Route.useParams();
   const { remote, isLoading } = useRemote(name);
   const { addLoadedApp, setActiveApp } = useLoadedApps();
+
+  // Extract the sub-path from the splat parameter
+  // _splat contains everything after /apps/$name/
+  const subPath = _splat ? `/${_splat}` : "/";
 
   useEffect(() => {
     if (remote) {
@@ -57,6 +61,7 @@ function RemotePage() {
         scope={remote.scope}
         module="./routes"
         fallback={<LoadingSkeleton name={name} />}
+        initialPath={subPath}
       />
     </div>
   );
