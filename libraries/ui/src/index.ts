@@ -31,6 +31,8 @@ export {
   ChevronRight,
   PanelLeftClose,
   PanelLeftOpen,
+  ArrowLeft,
+  ArrowRight,
   X,
   // Apps
   Target,
@@ -41,7 +43,6 @@ export {
   Rocket,
   Sparkles,
   Zap,
-  ArrowRight,
   // Architecture
   Box,
   RefreshCw,

@@ -13,7 +13,9 @@ import {
   Star,
   Sparkles,
   CheckCircle2,
+  Info,
 } from "@mf-hub/ui";
+import { MicroLink } from "@mf-hub/router";
 import "./index.css";
 
 interface SelectedDay {
@@ -239,48 +241,28 @@ const App: React.FC = () => {
         </Card>
       </div>
 
-      {/* Module Info Card */}
-      <Card
-        className="mt-6 opacity-0 animate-fade-in-up"
-        style={{ animationDelay: "300ms" }}
-      >
-        <CardHeader>
-          <CardTitle>Module Info</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
-            <InfoItem label="Scope" value="calendarApp" />
-            <InfoItem label="Module" value="./App" />
-            <InfoItem label="Port" value="3002" />
-            <InfoItem label="Shared" value="react, react-dom" />
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Footer */}
       <div
         className="text-center py-6 text-sm text-muted-foreground opacity-0 animate-fade-in"
-        style={{ animationDelay: "400ms" }}
+        style={{ animationDelay: "300ms" }}
       >
-        <p className="flex items-center justify-center gap-1.5">
+        <p className="flex items-center justify-center gap-1.5 mb-3">
           <CheckCircle2 className="w-4 h-4 text-green-500" />
           Successfully loaded from{" "}
           <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
             http://localhost:3002
           </code>
         </p>
+        <MicroLink
+          to="/info"
+          className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Info className="w-4 h-4" />
+          View Module Info
+        </MicroLink>
       </div>
     </div>
   );
 };
-
-function InfoItem({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-col gap-1 p-3 rounded-lg bg-muted/50">
-      <span className="text-xs font-medium text-muted-foreground">{label}</span>
-      <code className="text-sm font-mono">{value}</code>
-    </div>
-  );
-}
 
 export default App;

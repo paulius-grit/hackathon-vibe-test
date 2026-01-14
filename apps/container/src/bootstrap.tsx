@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { registerSharedModules } from "@mf-hub/loader";
+// import { registerSharedModules } from "@mf-hub/loader";
 import { LoadedAppsProvider } from "./context/LoadedAppsContext";
 import { RemoteAppConfig, RemotesProvider } from "./context/RemotesContext";
 import { routeTree } from "./routeTree.gen";
@@ -9,18 +9,18 @@ import "./index.css";
 
 // Register shared modules for Module Federation
 // This makes the host's React available to remote apps
-registerSharedModules([
-  {
-    name: "react",
-    version: "18.3.1",
-    getter: () => import("react"),
-  },
-  {
-    name: "react-dom",
-    version: "18.3.1",
-    getter: () => import("react-dom"),
-  },
-]);
+// registerSharedModules([
+//   {
+//     name: "react",
+//     version: "18.3.1",
+//     getter: () => import("react"),
+//   },
+//   {
+//     name: "react-dom",
+//     version: "18.3.1",
+//     getter: () => import("react-dom"),
+//   },
+// ]);
 
 // Fallback remotes in case API is unavailable
 const fallbackRemotes: RemoteAppConfig[] = [

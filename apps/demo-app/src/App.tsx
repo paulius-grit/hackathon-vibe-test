@@ -7,12 +7,13 @@ import {
   CardTitle,
   Badge,
   Button,
-  Separator,
   Target,
   Minus,
   Plus,
   CheckCircle2,
+  Info,
 } from "@mf-hub/ui";
+import { MicroLink } from "@mf-hub/router";
 import "./index.css";
 
 /**
@@ -73,51 +74,26 @@ export default function App() {
         </CardContent>
       </Card>
 
-      {/* Module Info Card */}
-      <Card
-        className="mb-4 opacity-0 animate-fade-in-up"
-        style={{ animationDelay: "200ms" }}
-      >
-        <CardHeader>
-          <CardTitle>Module Info</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <InfoRow label="Scope" value="demoApp" />
-            <Separator />
-            <InfoRow label="Module" value="./App" />
-            <Separator />
-            <InfoRow label="Port" value="3001" />
-            <Separator />
-            <InfoRow label="Shared" value="react, react-dom" />
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Footer */}
       <div
         className="text-center py-4 text-sm text-muted-foreground opacity-0 animate-fade-in"
-        style={{ animationDelay: "300ms" }}
+        style={{ animationDelay: "200ms" }}
       >
-        <p className="flex items-center justify-center gap-1.5">
+        <p className="flex items-center justify-center gap-1.5 mb-3">
           <CheckCircle2 className="w-4 h-4 text-green-500" />
           Successfully loaded from{" "}
           <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
             http://localhost:3001
           </code>
         </p>
+        <MicroLink
+          to="/info"
+          className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Info className="w-4 h-4" />
+          View Module Info
+        </MicroLink>
       </div>
-    </div>
-  );
-}
-
-function InfoRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between items-center">
-      <span className="text-sm font-medium">{label}</span>
-      <code className="text-sm text-muted-foreground bg-muted px-2 py-0.5 rounded">
-        {value}
-      </code>
     </div>
   );
 }
