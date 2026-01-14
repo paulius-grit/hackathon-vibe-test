@@ -1,46 +1,29 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-// import { registerSharedModules } from "@mf-hub/loader";
+import {
+  __federation_method_setRemote,
+  __federation_method_getRemote,
+  __federation_method_unwrapDefault,
+  __federation_method_ensure,
+} from "virtual:__federation__";
+import { initFederation } from "@mf-hub/loader";
 import { LoadedAppsProvider } from "./context/LoadedAppsContext";
 import { RemoteAppConfig, RemotesProvider } from "./context/RemotesContext";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
 
-// Register shared modules for Module Federation
-// This makes the host's React available to remote apps
-// registerSharedModules([
-//   {
-//     name: "react",
-//     version: "18.3.1",
-//     getter: () => import("react"),
-//   },
-//   {
-//     name: "react-dom",
-//     version: "18.3.1",
-//     getter: () => import("react-dom"),
-//   },
-// ]);
+// Initialize federation with the virtual module methods
+// This enables the loader library to register and load remote modules
+initFederation({
+  setRemote: __federation_method_setRemote,
+  getRemote: __federation_method_getRemote,
+  unwrapDefault: __federation_method_unwrapDefault,
+  ensure: __federation_method_ensure,
+});
 
 // Fallback remotes in case API is unavailable
-const fallbackRemotes: RemoteAppConfig[] = [
-  // {
-  //   name: "demo-app",
-  //   title: "Demo Application Test",
-  //   icon: "Target",
-  //   url: "http://localhost:3001",
-  //   scope: "demo-app",
-  //   module: "./App",
-  // },
-  // {
-  //   name: "calendar-app",
-  //   title: "Mystical Calendar",
-  //   icon: "Calendar",
-  //   url: "http://localhost:3002",
-  //   scope: "calendarApp",
-  //   module: "./App",
-  // },
-];
+const fallbackRemotes: RemoteAppConfig[] = [];
 
 // Create a new router instance
 const router = createRouter({ routeTree });

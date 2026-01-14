@@ -10,18 +10,17 @@ export default defineConfig({
     react(),
     federation({
       name: "container",
-      // Remotes will be loaded dynamically at runtime via the loader library
-      remotes: {},
-      shared: {
-        react: {
-          singleton: true,
-          requiredVersion: "^18.3.1",
-        },
-        "react-dom": {
-          singleton: true,
-          requiredVersion: "^18.3.1",
+      // Add a placeholder remote to force the plugin to generate proper share scope code
+      // Actual remotes are loaded dynamically at runtime via the loader library
+      remotes: {
+        // This placeholder is never actually loaded - it just triggers proper share scope generation
+        __placeholder__: {
+          external: "http://localhost:9999/__placeholder__/assets/remoteEntry.js",
+          format: "esm",
+          from: "vite",
         },
       },
+      shared: ["react", "react-dom", "@tanstack/react-router"],
     }),
   ],
   resolve: {

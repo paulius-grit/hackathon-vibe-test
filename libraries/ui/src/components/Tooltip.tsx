@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useRef, useState, useEffect } from "react";
 import { cn } from "../lib/utils";
 
 interface TooltipProps {
@@ -16,10 +16,10 @@ function Tooltip({
   sideOffset = 8,
   delayDuration = 200,
 }: TooltipProps) {
-  const [isVisible, setIsVisible] = React.useState(false);
-  const [position, setPosition] = React.useState({ x: 0, y: 0 });
-  const triggerRef = React.useRef<HTMLDivElement>(null);
-  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showTooltip = () => {
     timeoutRef.current = setTimeout(() => {
@@ -60,7 +60,7 @@ function Tooltip({
     setIsVisible(false);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);

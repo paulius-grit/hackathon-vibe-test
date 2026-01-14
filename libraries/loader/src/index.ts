@@ -10,6 +10,8 @@ export type {
   RemoteAppDescriptor,
 } from "./types";
 
+export type { FederationMethods, FederationRemoteConfig } from "./loadRemote";
+
 // Registry functions
 export {
   registerRemote,
@@ -26,11 +28,12 @@ export {
 
 // Loader functions
 export {
+  initFederation,
+  isFederationInitialized,
   loadRemote,
   loadRemoteByConfig,
   loadRemoteByUrl,
   loadRemoteByDescriptor,
   preloadRemote,
   clearModuleCache,
-  registerSharedModules,
 } from "./loadRemote";

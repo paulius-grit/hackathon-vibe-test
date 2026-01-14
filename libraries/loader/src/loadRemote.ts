@@ -1,6 +1,5 @@
 import type {
   RemoteConfig,
-  RemoteModule,
   LoadRemoteResult,
   LoadRemoteOptions,
   RemoteAppDescriptor,
@@ -11,11 +10,60 @@ import {
   updateRemoteStatus,
 } from "./registry";
 
-// Cache for loaded remote containers
-const containerCache = new Map<string, unknown>();
+// Config type for federation remote
+export interface FederationRemoteConfig {
+  url: (() => Promise<string>) | string;
+  format: "esm" | "systemjs" | "var";
+  from: "vite" | "webpack";
+}
+
+// Types for federation methods that will be provided by the container
+export interface FederationMethods {
+  setRemote: (name: string, config: FederationRemoteConfig) => void;
+  getRemote: (scope: string, module: string) => Promise<unknown>;
+  unwrapDefault: (module: unknown) => unknown;
+  ensure: (remoteName: string) => Promise<unknown>;
+}
+
+// Federation methods - must be set by the consuming app
+let federationMethods: FederationMethods | null = null;
+
+/**
+ * Initialize the loader with federation methods from the container app
+ * Call this from your container's bootstrap.tsx after importing from virtual:__federation__
+ * 
+ * @example
+ * ```ts
+ * import { 
+ *   __federation_method_setRemote,
+ *   __federation_method_getRemote, 
+ *   __federation_method_unwrapDefault 
+ * } from "virtual:__federation__";
+ * import { initFederation } from "@mf-hub/loader";
+ * 
+ * initFederation({
+ *   setRemote: __federation_method_setRemote,
+ *   getRemote: __federation_method_getRemote,
+ *   unwrapDefault: __federation_method_unwrapDefault,
+ * });
+ * ```
+ */
+export const initFederation = (methods: FederationMethods): void => {
+  federationMethods = methods;
+};
+
+/**
+ * Check if federation is initialized
+ */
+export const isFederationInitialized = (): boolean => {
+  return federationMethods !== null;
+};
 
 // Cache for loaded modules
 const moduleCache = new Map<string, unknown>();
+
+// Track registered remotes to avoid re-registering
+const registeredRemotes = new Set<string>();
 
 /**
  * Default options for loading remotes
@@ -52,103 +100,24 @@ const buildRemoteEntryUrl = (baseUrl: string): string => {
 };
 
 /**
- * Remote container interface from vite-plugin-federation
+ * Register a remote with the federation runtime
  */
-interface FederationContainer {
-  init: (shareScope: Record<string, unknown>) => void;
-  get: (module: string) => Promise<() => unknown>;
-}
-
-/**
- * Shared module registration for the global federation scope
- */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type SharedModuleGetter = () => Promise<any>;
-
-interface SharedModuleConfig {
-  name: string;
-  version: string;
-  getter: SharedModuleGetter;
-}
-
-/**
- * Register shared modules in the global federation scope
- * This must be called before loading any remotes
- */
-export const registerSharedModules = (modules: SharedModuleConfig[]): void => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const g = globalThis as any;
+const ensureRemoteRegistered = (name: string, url: string): void => {
+  if (!federationMethods) {
+    throw new Error("Federation not initialized. Call initFederation() first.");
+  }
   
-  g.__federation_shared__ = g.__federation_shared__ || {};
-  g.__federation_shared__.default = g.__federation_shared__.default || {};
+  if (registeredRemotes.has(name)) {
+    return;
+  }
   
-  for (const mod of modules) {
-    if (!g.__federation_shared__.default[mod.name]) {
-      g.__federation_shared__.default[mod.name] = {};
-    }
-    
-    g.__federation_shared__.default[mod.name][mod.version] = {
-      get: () => mod.getter().then((m: unknown) => () => m),
-      loaded: true,
-      from: "host",
-      scope: "default",
-    };
-  }
-};
-
-/**
- * Initialize a remote container using dynamic import
- * vite-plugin-federation exports { get, init } from remoteEntry.js
- */
-const initializeContainer = async (
-  scope: string,
-  url: string
-): Promise<FederationContainer> => {
-  // Check cache first
-  if (containerCache.has(scope)) {
-    return containerCache.get(scope) as FederationContainer;
-  }
-
-  const remoteEntryUrl = buildRemoteEntryUrl(url);
-
-  try {
-    // Use dynamic import for ES module remotes
-    const container = await import(/* @vite-ignore */ remoteEntryUrl) as FederationContainer;
-
-    if (!container || typeof container.get !== "function") {
-      throw new Error(`Remote container "${scope}" does not expose a valid federation interface`);
-    }
-
-    // Initialize with empty object - the remote will find shared modules in globalThis.__federation_shared__
-    container.init({});
-
-    containerCache.set(scope, container);
-    return container;
-  } catch (error) {
-    throw new Error(
-      `Failed to load remote container "${scope}" from ${remoteEntryUrl}: ${error instanceof Error ? error.message : String(error)}`
-    );
-  }
-};
-
-/**
- * Get a module from an initialized container
- * vite-plugin-federation uses get() which returns a factory function
- */
-const getModuleFromContainer = async <T>(
-  container: FederationContainer,
-  moduleName: string
-): Promise<RemoteModule<T>> => {
-  // Call the get function which returns a factory
-  const factory = await container.get(moduleName);
+  federationMethods.setRemote(name, {
+    url: buildRemoteEntryUrl(url),
+    format: "esm",
+    from: "vite",
+  });
   
-  if (typeof factory !== "function") {
-    throw new Error(`Module "${moduleName}" factory is not a function`);
-  }
-
-  // Call the factory to get the actual module
-  const module = factory();
-  return module as RemoteModule<T>;
+  registeredRemotes.add(name);
 };
 
 /**
@@ -172,11 +141,19 @@ export const loadRemote = async <T = unknown>(
 
 /**
  * Load a remote module by configuration
+ * Uses vite-plugin-federation's virtual:__federation__ APIs
  */
 export const loadRemoteByConfig = async <T = unknown>(
   config: RemoteConfig,
   options: LoadRemoteOptions = {}
 ): Promise<LoadRemoteResult<T>> => {
+  if (!federationMethods) {
+    return {
+      success: false,
+      error: new Error("Federation not initialized. Call initFederation() first."),
+    };
+  }
+
   const opts = { ...defaultOptions, ...options };
   const { scope, url, module = "./App", name } = config;
   const cacheKey = `${scope}:${module}`;
@@ -199,9 +176,19 @@ export const loadRemoteByConfig = async <T = unknown>(
   for (let attempt = 0; attempt <= opts.retries; attempt++) {
     try {
       const loadPromise = (async () => {
-        const container = await initializeContainer(scope, url);
-        const remoteModule = await getModuleFromContainer<T>(container, module);
-        return remoteModule.default;
+        // Register the remote with federation runtime
+        ensureRemoteRegistered(scope, url);
+        
+        // Ensure the remote is initialized (loads remoteEntry.js and initializes share scope)
+        await federationMethods!.ensure(scope);
+        
+        // Use federation's getRemote to load the module
+        const remoteModule = await federationMethods!.getRemote(scope, module);
+        
+        // Unwrap the default export
+        const unwrapped = federationMethods!.unwrapDefault(remoteModule);
+        
+        return unwrapped as T;
       })();
 
       const result = await Promise.race([loadPromise, createTimeout(opts.timeout)]);
@@ -291,9 +278,9 @@ export const clearModuleCache = (scope?: string): void => {
         moduleCache.delete(key);
       }
     }
-    containerCache.delete(scope);
+    registeredRemotes.delete(scope);
   } else {
     moduleCache.clear();
-    containerCache.clear();
+    registeredRemotes.clear();
   }
 };

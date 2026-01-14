@@ -12,16 +12,7 @@ export default defineConfig({
       exposes: {
         "./routes": "./src/routes.ts",
       },
-      shared: {
-        react: {
-          singleton: true,
-          requiredVersion: "^18.3.1",
-        },
-        "react-dom": {
-          singleton: true,
-          requiredVersion: "^18.3.1",
-        },
-      },
+      shared: ["react", "react-dom", "@tanstack/react-router"],
     }),
   ],
   resolve: {
