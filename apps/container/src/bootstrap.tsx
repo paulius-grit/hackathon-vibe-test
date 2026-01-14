@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { registerSharedModules } from "@mf-hub/loader";
 import { LoadedAppsProvider } from "./context/LoadedAppsContext";
+import { RemoteAppConfig, RemotesProvider } from "./context/RemotesContext";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
 
@@ -20,6 +21,26 @@ registerSharedModules([
     getter: () => import("react-dom"),
   },
 ]);
+
+// Fallback remotes in case API is unavailable
+const fallbackRemotes: RemoteAppConfig[] = [
+  // {
+  //   name: "demo-app",
+  //   title: "Demo Application Test",
+  //   icon: "Target",
+  //   url: "http://localhost:3001",
+  //   scope: "demo-app",
+  //   module: "./App",
+  // },
+  // {
+  //   name: "calendar-app",
+  //   title: "Mystical Calendar",
+  //   icon: "Calendar",
+  //   url: "http://localhost:3002",
+  //   scope: "calendarApp",
+  //   module: "./App",
+  // },
+];
 
 // Create a new router instance
 const router = createRouter({ routeTree });
@@ -39,8 +60,10 @@ if (!rootElement) {
 
 createRoot(rootElement).render(
   <StrictMode>
-    <LoadedAppsProvider>
-      <RouterProvider router={router} />
-    </LoadedAppsProvider>
+    <RemotesProvider fallbackRemotes={fallbackRemotes}>
+      <LoadedAppsProvider>
+        <RouterProvider router={router} />
+      </LoadedAppsProvider>
+    </RemotesProvider>
   </StrictMode>
 );

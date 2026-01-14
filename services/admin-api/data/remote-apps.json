@@ -3,7 +3,7 @@
     {
       "id": "2b6d668d-88f9-48d2-82b8-4433402e4c21",
       "name": "demo-app",
-      "title": "Demo Application",
+      "title": "Demo App",
       "icon": "Target",
       "url": "http://localhost:3001",
       "scope": "demo-app",

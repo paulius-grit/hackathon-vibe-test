@@ -10,43 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as RemoteNameRouteImport } from './routes/remote.$name'
+import { Route as AppsNameRouteImport } from './routes/apps.$name'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RemoteNameRoute = RemoteNameRouteImport.update({
-  id: '/remote/$name',
-  path: '/remote/$name',
+const AppsNameRoute = AppsNameRouteImport.update({
+  id: '/apps/$name',
+  path: '/apps/$name',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/remote/$name': typeof RemoteNameRoute
+  '/apps/$name': typeof AppsNameRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/remote/$name': typeof RemoteNameRoute
+  '/apps/$name': typeof AppsNameRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/remote/$name': typeof RemoteNameRoute
+  '/apps/$name': typeof AppsNameRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/remote/$name'
+  fullPaths: '/' | '/apps/$name'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/remote/$name'
-  id: '__root__' | '/' | '/remote/$name'
+  to: '/' | '/apps/$name'
+  id: '__root__' | '/' | '/apps/$name'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  RemoteNameRoute: typeof RemoteNameRoute
+  AppsNameRoute: typeof AppsNameRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -58,11 +58,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/remote/$name': {
-      id: '/remote/$name'
-      path: '/remote/$name'
-      fullPath: '/remote/$name'
-      preLoaderRoute: typeof RemoteNameRouteImport
+    '/apps/$name': {
+      id: '/apps/$name'
+      path: '/apps/$name'
+      fullPath: '/apps/$name'
+      preLoaderRoute: typeof AppsNameRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -70,7 +70,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  RemoteNameRoute: RemoteNameRoute,
+  AppsNameRoute: AppsNameRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

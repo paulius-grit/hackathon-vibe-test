@@ -1,83 +1,16 @@
-import type { RemoteAppDescriptor } from "@mf-hub/loader";
-
 /**
- * Extended remote configuration with UI metadata
+ * Remote App Configuration
+ *
+ * This module re-exports types from RemotesContext.
+ * The actual remote loading is now handled via React Context.
+ *
+ * @see ../context/RemotesContext.tsx
  */
-export interface RemoteAppConfig extends RemoteAppDescriptor {
-  /** Unique identifier for routing */
-  name: string;
-  /** Display title in the sidebar */
-  title: string;
-  /** Emoji or icon identifier */
-  icon?: string;
-}
 
-let remoteApps: RemoteAppConfig[] = [];
-
-/**
- * Static configuration of available remote apps.
- * In production, this could be fetched from an API.
- */
-// const remoteApps: RemoteAppConfig[] = [
-//   {
-//     name: "demo-app",
-//     title: "Demo Application",
-//     icon: "Target",
-//     url: "http://localhost:3001",
-//     scope: "demo-app",
-//     module: "./App",
-//   },
-//   {
-//     name: "calendar-app",
-//     title: "Mystical Calendar",
-//     icon: "Calendar",
-//     url: "http://localhost:3002",
-//     scope: "calendarApp",
-//     module: "./App",
-//   },
-// ];
-
-/**
- * Get all configured remote applications
- */
-export const getConfiguredRemotes = async (): Promise<RemoteAppConfig[]> => {
-  const remotesData = await fetch("http://localhost:4000/api/remote-apps");
-  const remotesJson = await remotesData.json();
-
-  remoteApps = remotesJson.data;
-
-  return remotesJson.data;
-};
-
-/**
- * Find a remote by its name
- */
-export const getRemoteByName = (name: string): RemoteAppConfig | undefined => {
-  return remoteApps.find((remote) => remote.name === name);
-};
-
-/**
- * Add a remote dynamically (e.g., from API response)
- */
-export const addRemote = (config: RemoteAppConfig): void => {
-  const existing = remoteApps.findIndex((r) => r.name === config.name);
-  if (existing >= 0) {
-    remoteApps[existing] = config;
-  } else {
-    remoteApps.push(config);
-  }
-};
-
-/**
- * Add multiple remotes from an API response
- */
-export const addRemotesFromApi = (configs: RemoteAppConfig[]): void => {
-  configs.forEach(addRemote);
-};
-
-/**
- * Clear all configured remotes
- */
-export const clearRemotes = (): void => {
-  remoteApps.length = 0;
-};
+// Re-export types for convenience
+export type { RemoteAppConfig } from "../context/RemotesContext";
+export {
+  useRemotes,
+  useRemote,
+  RemotesProvider,
+} from "../context/RemotesContext";

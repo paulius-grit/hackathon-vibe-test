@@ -1,20 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { RemoteLoader } from "@/components/RemoteLoader";
-import { getRemoteByName } from "@/config/remotes";
+import { useRemote } from "@/context/RemotesContext";
 import { useLoadedApps } from "@/context/LoadedAppsContext";
 import { Card, CardContent, Skeleton } from "@mf-hub/ui";
 
-export const Route = createFileRoute("/remote/$name")({
+export const Route = createFileRoute("/apps/$name")({
   component: RemotePage,
-  loader: ({ params }) => {
-    const remote = getRemoteByName(params.name);
-    return { remote, name: params.name };
-  },
 });
 
 function RemotePage() {
-  const { remote, name } = Route.useLoaderData();
+  const { name } = Route.useParams();
+  const { remote, isLoading } = useRemote(name);
   const { addLoadedApp, setActiveApp } = useLoadedApps();
 
   useEffect(() => {
@@ -22,11 +19,15 @@ function RemotePage() {
       addLoadedApp({
         name: remote.name,
         title: remote.title ?? remote.name,
-        icon: remote.icon ?? "📦",
+        icon: remote.icon ?? "Package",
       });
       setActiveApp(remote.name);
     }
   }, [remote, addLoadedApp, setActiveApp]);
+
+  if (isLoading) {
+    return <LoadingSkeleton name={name} />;
+  }
 
   if (!remote) {
     return (

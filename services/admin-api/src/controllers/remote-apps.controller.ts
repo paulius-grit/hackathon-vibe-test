@@ -8,7 +8,7 @@ import {
   updateRemoteAppSchema,
   reorderAppsSchema,
 } from "../types/remote-app.js";
-import logger from "../utils/logger.js";
+// import logger from "../utils/logger.js";
 
 export class RemoteAppsController {
   /**
@@ -35,7 +35,7 @@ export class RemoteAppsController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { id } = req.params;
+      const { id } = req.params as { id: string };
       const app = await remoteAppsService.getAppById(id);
 
       if (!app) {
@@ -92,7 +92,7 @@ export class RemoteAppsController {
    */
   async update(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const { id } = req.params as { id: string };
       const validationResult = updateRemoteAppSchema.safeParse(req.body);
 
       if (!validationResult.success) {
@@ -136,7 +136,7 @@ export class RemoteAppsController {
    */
   async delete(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const { id } = req.params;
+      const { id } = req.params as { id: string };
       const deleted = await remoteAppsService.deleteApp(id);
 
       if (!deleted) {
@@ -163,7 +163,7 @@ export class RemoteAppsController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const { id } = req.params;
+      const { id } = req.params as { id: string };
       const app = await remoteAppsService.toggleAppActive(id);
 
       if (!app) {

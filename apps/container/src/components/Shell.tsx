@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { getConfiguredRemotes, RemoteAppConfig } from "@/config/remotes";
+import { useRemotes } from "@/context/RemotesContext";
 import { useLoadedApps } from "@/context/LoadedAppsContext";
 import {
   cn,
@@ -13,9 +13,10 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   X,
+  Skeleton,
   type LucideIcon,
 } from "@mf-hub/ui";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 // Map icon names to Lucide components
 const iconMap: Record<string, LucideIcon> = {
@@ -36,13 +37,7 @@ interface ShellProps {
 
 export function Shell({ children }: ShellProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  // const remotes = getConfiguredRemotes();
-
-  const [remotes, setRemotes] = useState<RemoteAppConfig[]>([]);
-
-  useEffect(() => {
-    getConfiguredRemotes().then(setRemotes);
-  }, []);
+  const { remotes, isLoading: isLoadingRemotes } = useRemotes();
 
   const { loadedApps, activeApp, removeLoadedApp, setActiveApp } =
     useLoadedApps();
@@ -52,7 +47,7 @@ export function Shell({ children }: ShellProps) {
 
   const handleTabClick = (appName: string) => {
     setActiveApp(appName);
-    navigate({ to: "/remote/$name", params: { name: appName } });
+    navigate({ to: "/apps/$name", params: { name: appName } });
   };
 
   const handleTabClose = (appName: string) => {
@@ -64,7 +59,7 @@ export function Shell({ children }: ShellProps) {
       if (loadedApps.length > 1) {
         const nextApp = loadedApps[appIndex === 0 ? 1 : appIndex - 1];
         if (nextApp) {
-          navigate({ to: "/remote/$name", params: { name: nextApp.name } });
+          navigate({ to: "/apps/$name", params: { name: nextApp.name } });
         }
       } else {
         navigate({ to: "/" });
@@ -129,7 +124,12 @@ export function Shell({ children }: ShellProps) {
             </span>
           </div>
 
-          {remotes.length === 0 ? (
+          {isLoadingRemotes ? (
+            <div className="space-y-2 px-2">
+              <Skeleton className="h-9 w-full rounded-lg" />
+              <Skeleton className="h-9 w-full rounded-lg" />
+            </div>
+          ) : remotes.length === 0 ? (
             <p
               className={cn(
                 "text-sm text-[hsl(var(--sidebar-foreground))]/40 transition-all duration-300",
@@ -142,11 +142,11 @@ export function Shell({ children }: ShellProps) {
             remotes.map((remote) => (
               <NavLink
                 key={remote.name}
-                to="/remote/$name"
+                to="/apps/$name"
                 params={{ name: remote.name }}
                 iconName={remote.icon ?? "Package"}
                 isCollapsed={isCollapsed}
-                isActive={currentPath === `/remote/${remote.name}`}
+                isActive={currentPath.startsWith(`/apps/${remote.name}`)}
               >
                 {remote.title ?? remote.name}
               </NavLink>
