@@ -12,34 +12,41 @@ export interface RemoteAppConfig extends RemoteAppDescriptor {
   icon?: string;
 }
 
+let remoteApps: RemoteAppConfig[] = [];
+
 /**
  * Static configuration of available remote apps.
  * In production, this could be fetched from an API.
  */
-const remoteApps: RemoteAppConfig[] = [
-  {
-    name: "demo-app",
-    title: "Demo Application",
-    icon: "Target",
-    url: "http://localhost:3001",
-    scope: "demo-app",
-    module: "./App",
-  },
-  {
-    name: "calendar-app",
-    title: "Mystical Calendar",
-    icon: "Calendar",
-    url: "http://localhost:3002",
-    scope: "calendarApp",
-    module: "./App",
-  },
-];
+// const remoteApps: RemoteAppConfig[] = [
+//   {
+//     name: "demo-app",
+//     title: "Demo Application",
+//     icon: "Target",
+//     url: "http://localhost:3001",
+//     scope: "demo-app",
+//     module: "./App",
+//   },
+//   {
+//     name: "calendar-app",
+//     title: "Mystical Calendar",
+//     icon: "Calendar",
+//     url: "http://localhost:3002",
+//     scope: "calendarApp",
+//     module: "./App",
+//   },
+// ];
 
 /**
  * Get all configured remote applications
  */
-export const getConfiguredRemotes = (): RemoteAppConfig[] => {
-  return remoteApps;
+export const getConfiguredRemotes = async (): Promise<RemoteAppConfig[]> => {
+  const remotesData = await fetch("http://localhost:4000/api/remote-apps");
+  const remotesJson = await remotesData.json();
+
+  remoteApps = remotesJson.data;
+
+  return remotesJson.data;
 };
 
 /**

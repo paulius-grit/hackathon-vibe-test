@@ -1,5 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { getConfiguredRemotes } from "@/config/remotes";
+import { getConfiguredRemotes, RemoteAppConfig } from "@/config/remotes";
 import { useLoadedApps } from "@/context/LoadedAppsContext";
 import {
   cn,
@@ -15,7 +15,7 @@ import {
   X,
   type LucideIcon,
 } from "@mf-hub/ui";
-import { useState, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 // Map icon names to Lucide components
 const iconMap: Record<string, LucideIcon> = {
@@ -36,7 +36,14 @@ interface ShellProps {
 
 export function Shell({ children }: ShellProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const remotes = getConfiguredRemotes();
+  // const remotes = getConfiguredRemotes();
+
+  const [remotes, setRemotes] = useState<RemoteAppConfig[]>([]);
+
+  useEffect(() => {
+    getConfiguredRemotes().then(setRemotes);
+  }, []);
+
   const { loadedApps, activeApp, removeLoadedApp, setActiveApp } =
     useLoadedApps();
   const navigate = useNavigate();
