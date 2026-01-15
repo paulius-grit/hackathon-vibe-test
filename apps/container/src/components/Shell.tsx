@@ -14,6 +14,7 @@ import {
   PanelLeftOpen,
   X,
   Skeleton,
+  Container,
   type LucideIcon,
 } from "@mf-hub/ui";
 import { useState, type ReactNode } from "react";
@@ -36,7 +37,7 @@ interface ShellProps {
 }
 
 export function Shell({ children }: ShellProps) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const { remotes, isLoading: isLoadingRemotes } = useRemotes();
 
   const { loadedApps, activeApp, removeLoadedApp, setActiveApp } =
@@ -70,19 +71,14 @@ export function Shell({ children }: ShellProps) {
     }
   };
 
-  const handleHomeClick = () => {
-    setActiveApp(null);
-    navigate({ to: "/" });
-  };
-
   return (
-    <div className="flex min-h-screen">
+    <div className="flex h-full w-full">
       {/* Sidebar */}
       <aside
         className={cn(
           "flex-shrink-0 flex flex-col bg-[hsl(var(--sidebar))] text-[hsl(var(--sidebar-foreground))]",
           "transition-all duration-300 ease-out",
-          isCollapsed ? "w-16" : "w-64"
+          isCollapsed ? "w-14" : "w-56"
         )}
       >
         {/* Logo */}
@@ -90,18 +86,19 @@ export function Shell({ children }: ShellProps) {
           className={cn(
             "flex items-center border-b border-[hsl(var(--sidebar-border))]",
             "transition-all duration-300",
-            isCollapsed ? "justify-center px-2 py-5" : "gap-3 px-6 py-5"
+            "py-3 px-4",
+            isCollapsed ? "justify-center" : "gap-3"
           )}
         >
-          <Plug className="w-6 h-6 flex-shrink-0" />
+          <Container className="w-5 h-5 shrink-0" />
           <span
             className={cn(
-              "text-lg font-semibold tracking-tight whitespace-nowrap overflow-hidden",
+              "text-base font-semibold tracking-tight whitespace-nowrap overflow-hidden",
               "transition-all duration-300",
               isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
             )}
           >
-            MF Hub
+            Gritbench
           </span>
         </div>
 
@@ -118,13 +115,15 @@ export function Shell({ children }: ShellProps) {
 
           <div
             className={cn(
-              "mt-6 mb-2 overflow-hidden transition-all duration-300",
-              isCollapsed ? "px-0 opacity-0 h-0" : "px-3 opacity-100 h-auto"
+              "my-2 transition-all duration-300",
+              isCollapsed ? "px-0 h-0" : "px-2 h-auto"
             )}
           >
-            <span className="text-xs font-medium uppercase tracking-wider text-[hsl(var(--sidebar-foreground))]/50">
-              Micro Apps
-            </span>
+            {!isCollapsed && (
+              <span className="text-xs font-medium uppercase tracking-wider text-[hsl(var(--sidebar-foreground))]/50">
+                Micro Apps
+              </span>
+            )}
           </div>
 
           {isLoadingRemotes ? (
@@ -181,36 +180,18 @@ export function Shell({ children }: ShellProps) {
       <div className="flex-1 flex flex-col bg-background overflow-hidden">
         {/* Tabs Header */}
         {loadedApps.length > 0 && (
-          <header className="flex-shrink-0 border-b border-border bg-muted/30 px-4 py-2 opacity-0 animate-fade-in">
-            <div className="flex items-center gap-1">
-              {/* Home Tab */}
-              <button
-                onClick={handleHomeClick}
-                className={cn(
-                  "inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md",
-                  "transition-all duration-200",
-                  currentPath === "/" && !activeApp
-                    ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                )}
-              >
-                <Home className="w-4 h-4" />
-                <span>Home</span>
-              </button>
-
-              <div className="w-px h-4 bg-border mx-1" />
-
-              {/* App Tabs */}
+          <header className="flex-shrink-0 border-b border-border bg-muted/40 px-4 py-2 opacity-0 animate-fade-in">
+            <div className="flex items-center gap-1 overflow-y-auto">
               {loadedApps.map((app) => {
                 const IconComponent = getIconComponent(app.icon);
                 return (
                   <div
                     key={app.name}
                     className={cn(
-                      "inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md",
+                      "flex shrink-0 items-center gap-0 px-3 py-1.5 text-sm font-medium rounded-md border border-transparent",
                       "transition-all duration-200 group",
-                      activeApp === app.name
-                        ? "bg-background text-foreground shadow-sm"
+                      currentPath.startsWith(`/apps/${app.name}`)
+                        ? "bg-background text-foreground shadow-s border-gray-200"
                         : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                     )}
                   >
@@ -218,7 +199,7 @@ export function Shell({ children }: ShellProps) {
                       onClick={() => handleTabClick(app.name)}
                       className="inline-flex items-center gap-2"
                     >
-                      <IconComponent className="w-4 h-4" />
+                      <IconComponent className="w-4 h-4 shrink-0" />
                       <span>{app.title}</span>
                     </button>
                     <button
@@ -226,11 +207,10 @@ export function Shell({ children }: ShellProps) {
                       className={cn(
                         "ml-1 rounded-sm p-0.5 -mr-1",
                         "opacity-0 group-hover:opacity-60 hover:!opacity-100",
-                        "hover:bg-muted-foreground/20",
                         "transition-opacity"
                       )}
                     >
-                      <X className="w-3 h-3" />
+                      <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 );
@@ -272,7 +252,7 @@ function NavLink({
       className={cn(
         "flex items-center rounded-lg font-medium",
         "transition-all duration-200",
-        isCollapsed ? "justify-center p-2" : "gap-3 px-3 py-2",
+        isCollapsed ? "justify-center p-2" : "gap-3 p-2",
         isActive
           ? "bg-[hsl(var(--sidebar-accent))] text-white"
           : "text-[hsl(var(--sidebar-foreground))]/70 hover:text-[hsl(var(--sidebar-foreground))] hover:bg-[hsl(var(--sidebar-muted))]"
