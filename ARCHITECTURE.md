@@ -24,9 +24,9 @@ Module Federation is a Webpack/Vite feature that allows JavaScript applications 
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        Container                             │
+│                        Container                            │
 │  ┌─────────────────────────────────────────────────────┐    │
-│  │                    Shell (Layout)                    │    │
+│  │                    Shell (Layout)                   │    │
 │  │  ┌──────────┐  ┌────────────────────────────────┐   │    │
 │  │  │ Sidebar  │  │      Micro-app Area            │   │    │
 │  │  │          │  │  ┌──────────────────────────┐  │   │    │
@@ -148,7 +148,7 @@ Shared UI component library:
 ```
 ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
 │  Admin API   │────►│   Container  │────►│   Sidebar    │
-│  /api/remotes│     │   Context    │     │   Menu       │
+│  /api/rem..  │     │   Context    │     │   Menu       │
 └──────────────┘     └──────────────┘     └──────────────┘
                             │
                             ▼
