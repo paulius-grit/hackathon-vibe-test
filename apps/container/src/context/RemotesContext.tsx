@@ -26,7 +26,27 @@ export interface RemoteAppConfig extends RemoteAppDescriptor {
   isActive?: boolean;
   /** Display order in sidebar */
   displayOrder?: number;
+  /** Whether this is a system/hardcoded app (not from API) */
+  isSystem?: boolean;
 }
+
+/**
+ * Hardcoded system apps that are always available
+ * These apps are not fetched from the API and cannot be modified
+ */
+const SYSTEM_APPS: RemoteAppConfig[] = [
+  {
+    name: "admin",
+    title: "Admin",
+    icon: "Shield",
+    url: "http://localhost:3003",
+    scope: "admin-app",
+    module: "./routes",
+    isActive: true,
+    displayOrder: 999, // Always at the bottom
+    isSystem: true,
+  },
+];
 
 /**
  * API response shape
@@ -101,9 +121,15 @@ export function RemotesProvider({
   children,
   fallbackRemotes = [],
 }: RemotesProviderProps) {
-  const [remotes, setRemotes] = useState<RemoteAppConfig[]>(fallbackRemotes);
+  const [apiRemotes, setApiRemotes] = useState<RemoteAppConfig[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Combine API remotes with system apps
+  // System apps are always included regardless of API state
+  const remotes = [...apiRemotes, ...SYSTEM_APPS].sort(
+    (a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0),
+  );
 
   const refreshRemotes = useCallback(async () => {
     setIsLoading(true);
@@ -111,7 +137,7 @@ export function RemotesProvider({
 
     try {
       const apps = await fetchRemoteApps();
-      setRemotes(apps);
+      setApiRemotes(apps);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to load remote apps";
@@ -119,19 +145,19 @@ export function RemotesProvider({
       console.error("Failed to fetch remote apps:", err);
 
       // Keep fallback remotes if API fails
-      if (remotes.length === 0 && fallbackRemotes.length > 0) {
-        setRemotes(fallbackRemotes);
+      if (apiRemotes.length === 0 && fallbackRemotes.length > 0) {
+        setApiRemotes(fallbackRemotes);
       }
     } finally {
       setIsLoading(false);
     }
-  }, [fallbackRemotes, remotes.length]);
+  }, [fallbackRemotes, apiRemotes.length]);
 
   const getRemoteByName = useCallback(
     (name: string): RemoteAppConfig | undefined => {
       return remotes.find((remote) => remote.name === name);
     },
-    [remotes]
+    [remotes],
   );
 
   useEffect(() => {
