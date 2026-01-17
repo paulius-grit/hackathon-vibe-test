@@ -51,7 +51,7 @@ export class RemoteAppsService {
     if (exists) {
       throw new AppError(
         `Remote app with name '${input.name}' already exists`,
-        409
+        409,
       );
     }
 
@@ -64,6 +64,7 @@ export class RemoteAppsService {
       url: modelData.url!,
       scope: modelData.scope!,
       module: modelData.module!,
+      bundler: modelData.bundler || "vite",
       is_active: modelData.is_active ?? true,
       display_order: modelData.display_order ?? 0,
     });
@@ -80,7 +81,7 @@ export class RemoteAppsService {
    */
   async updateApp(
     id: string,
-    input: UpdateRemoteAppInput
+    input: UpdateRemoteAppInput,
   ): Promise<RemoteAppDto | null> {
     logger.info("Updating remote app", { id });
 
@@ -96,7 +97,7 @@ export class RemoteAppsService {
       if (nameExists) {
         throw new AppError(
           `Remote app with name '${input.name}' already exists`,
-          409
+          409,
         );
       }
     }
@@ -155,7 +156,7 @@ export class RemoteAppsService {
     logger.info("Reordering remote apps", { count: input.orders.length });
 
     await remoteAppsRepository.updateDisplayOrders(
-      input.orders.map((o) => ({ id: o.id, displayOrder: o.displayOrder }))
+      input.orders.map((o) => ({ id: o.id, displayOrder: o.displayOrder })),
     );
 
     return this.getAllApps();
@@ -168,7 +169,7 @@ export class RemoteAppsService {
 export class AppError extends Error {
   constructor(
     message: string,
-    public statusCode: number = 400
+    public statusCode: number = 400,
   ) {
     super(message);
     this.name = "AppError";

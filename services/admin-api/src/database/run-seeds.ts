@@ -13,7 +13,7 @@ async function runSeeds(): Promise<void> {
 
   if (existingApps.length > 0) {
     logger.info(
-      `Database already has ${existingApps.length} apps, skipping seed`
+      `Database already has ${existingApps.length} apps, skipping seed`,
     );
     return;
   }
@@ -29,6 +29,7 @@ async function runSeeds(): Promise<void> {
       url: "http://localhost:3001",
       scope: "demo-app",
       module: "./App",
+      bundler: "vite",
       is_active: true,
       display_order: 1,
       created_at: now,
@@ -42,8 +43,23 @@ async function runSeeds(): Promise<void> {
       url: "http://localhost:3002",
       scope: "calendarApp",
       module: "./App",
+      bundler: "vite",
       is_active: true,
       display_order: 2,
+      created_at: now,
+      updated_at: now,
+    },
+    {
+      id: uuidv4(),
+      name: "webpack-demo",
+      title: "Webpack Demo",
+      icon: "Box",
+      url: "http://localhost:3004",
+      scope: "webpackDemoApp",
+      module: "./routes",
+      bundler: "webpack",
+      is_active: true,
+      display_order: 3,
       created_at: now,
       updated_at: now,
     },

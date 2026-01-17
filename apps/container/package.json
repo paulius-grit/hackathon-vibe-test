@@ -13,12 +13,13 @@
     "@mf-hub/loader": "workspace:*",
     "@mf-hub/router": "workspace:*",
     "@mf-hub/ui": "workspace:*",
+    "@module-federation/enhanced": "^0.8.0",
     "@tanstack/react-router": "^1.45.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@originjs/vite-plugin-federation": "^1.3.5",
+    "@module-federation/vite": "^1.1.0",
     "@tanstack/router-devtools": "^1.45.0",
     "@tanstack/router-plugin": "^1.45.0",
     "@types/react": "^18.3.3",

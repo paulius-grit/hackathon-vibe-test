@@ -42,6 +42,7 @@ const SYSTEM_APPS: RemoteAppConfig[] = [
     url: "http://localhost:3003",
     scope: "admin-app",
     module: "./routes",
+    bundler: "vite",
     isActive: true,
     displayOrder: 999, // Always at the bottom
     isSystem: true,
@@ -59,6 +60,7 @@ interface ApiRemoteApp {
   url: string;
   scope: string;
   module: string;
+  bundler: "vite" | "webpack";
   isActive: boolean;
   displayOrder: number;
   createdAt: string;
@@ -87,6 +89,7 @@ function transformApiResponse(apiApp: ApiRemoteApp): RemoteAppConfig {
     url: apiApp.url,
     scope: apiApp.scope,
     module: apiApp.module,
+    bundler: apiApp.bundler,
     isActive: apiApp.isActive,
     displayOrder: apiApp.displayOrder,
   };

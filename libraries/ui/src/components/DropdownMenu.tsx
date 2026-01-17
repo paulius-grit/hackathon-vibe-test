@@ -6,15 +6,14 @@ interface DropdownMenuContextValue {
   onOpenChange: (open: boolean) => void;
 }
 
-const DropdownMenuContext = React.createContext<DropdownMenuContextValue | null>(
-  null
-);
+const DropdownMenuContext =
+  React.createContext<DropdownMenuContextValue | null>(null);
 
 function useDropdownMenuContext() {
   const context = React.useContext(DropdownMenuContext);
   if (!context) {
     throw new Error(
-      "DropdownMenu components must be used within a DropdownMenu"
+      "DropdownMenu components must be used within a DropdownMenu",
     );
   }
   return context;
@@ -38,7 +37,7 @@ function DropdownMenu({ open, onOpenChange, children }: DropdownMenuProps) {
       }
       onOpenChange?.(newOpen);
     },
-    [isControlled, onOpenChange]
+    [isControlled, onOpenChange],
   );
 
   return (
@@ -50,8 +49,7 @@ function DropdownMenu({ open, onOpenChange, children }: DropdownMenuProps) {
   );
 }
 
-export interface DropdownMenuTriggerProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface DropdownMenuTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   asChild?: boolean;
 }
 
@@ -90,8 +88,7 @@ const DropdownMenuTrigger = React.forwardRef<
 });
 DropdownMenuTrigger.displayName = "DropdownMenuTrigger";
 
-export interface DropdownMenuContentProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface DropdownMenuContentProps extends React.HTMLAttributes<HTMLDivElement> {
   align?: "start" | "center" | "end";
   sideOffset?: number;
 }
@@ -139,17 +136,18 @@ const DropdownMenuContent = React.forwardRef<
   return (
     <div
       ref={(node) => {
-        (contentRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
+        (contentRef as React.MutableRefObject<HTMLDivElement | null>).current =
+          node;
         if (typeof ref === "function") ref(node);
         else if (ref) ref.current = node;
       }}
       className={cn(
-        "absolute z-50 min-w-[8rem] overflow-hidden rounded-md border bg-white dark:bg-slate-950 p-1 text-popover-foreground shadow-md",
+        "absolute z-50 min-w-[8rem] overflow-hidden rounded-md border bg-white p-1 text-popover-foreground shadow-md",
         "animate-in fade-in-0 zoom-in-95",
         align === "start" && "left-0",
         align === "center" && "left-1/2 -translate-x-1/2",
         align === "end" && "right-0",
-        className
+        className,
       )}
       style={{ top: `calc(100% + ${sideOffset}px)` }}
       {...props}
@@ -160,8 +158,7 @@ const DropdownMenuContent = React.forwardRef<
 });
 DropdownMenuContent.displayName = "DropdownMenuContent";
 
-export interface DropdownMenuItemProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface DropdownMenuItemProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   inset?: boolean;
 }
 
@@ -182,7 +179,7 @@ const DropdownMenuItem = React.forwardRef<
       className={cn(
         "relative flex w-full cursor-pointer select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground hover:bg-accent hover:text-accent-foreground disabled:pointer-events-none disabled:opacity-50",
         inset && "pl-8",
-        className
+        className,
       )}
       onClick={handleClick}
       {...props}
@@ -191,8 +188,7 @@ const DropdownMenuItem = React.forwardRef<
 });
 DropdownMenuItem.displayName = "DropdownMenuItem";
 
-export interface DropdownMenuLabelProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface DropdownMenuLabelProps extends React.HTMLAttributes<HTMLDivElement> {
   inset?: boolean;
 }
 
@@ -205,15 +201,14 @@ const DropdownMenuLabel = React.forwardRef<
     className={cn(
       "px-2 py-1.5 text-sm font-semibold",
       inset && "pl-8",
-      className
+      className,
     )}
     {...props}
   />
 ));
 DropdownMenuLabel.displayName = "DropdownMenuLabel";
 
-export interface DropdownMenuSeparatorProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export interface DropdownMenuSeparatorProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const DropdownMenuSeparator = React.forwardRef<
   HTMLDivElement,
@@ -227,8 +222,7 @@ const DropdownMenuSeparator = React.forwardRef<
 ));
 DropdownMenuSeparator.displayName = "DropdownMenuSeparator";
 
-export interface DropdownMenuShortcutProps
-  extends React.HTMLAttributes<HTMLSpanElement> {}
+export interface DropdownMenuShortcutProps extends React.HTMLAttributes<HTMLSpanElement> {}
 
 const DropdownMenuShortcut = ({
   className,

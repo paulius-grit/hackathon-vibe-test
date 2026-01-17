@@ -60,6 +60,7 @@ function RemotePage() {
         url={remote.url}
         scope={remote.scope}
         module="./routes"
+        bundler={remote.bundler}
         fallback={<LoadingSkeleton name={name} />}
         initialPath={subPath}
       />

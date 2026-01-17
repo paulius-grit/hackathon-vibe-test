@@ -69,6 +69,7 @@ export default function EditAppPage({ appId }: EditAppPageProps) {
           url: data.url,
           scope: data.scope,
           module: data.module,
+          bundler: data.bundler,
           isActive: data.isActive,
           displayOrder: data.displayOrder,
         });
@@ -83,7 +84,7 @@ export default function EditAppPage({ appId }: EditAppPageProps) {
   }, [appId]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -164,10 +165,10 @@ export default function EditAppPage({ appId }: EditAppPageProps) {
         <Badge className="mb-4 bg-blue-100 text-blue-700 hover:bg-blue-100">
           <Shield className="w-3 h-3 mr-1" /> Edit Application
         </Badge>
-        <h1 className="text-3xl font-bold tracking-tight mb-2">
-          {app?.title}
-        </h1>
-        <p className="text-muted-foreground">Update application configuration</p>
+        <h1 className="text-3xl font-bold tracking-tight mb-2">{app?.title}</h1>
+        <p className="text-muted-foreground">
+          Update application configuration
+        </p>
       </div>
 
       {/* Back Link */}
@@ -304,6 +305,22 @@ export default function EditAppPage({ appId }: EditAppPageProps) {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
+                <Label htmlFor="bundler">Bundler</Label>
+                <Select
+                  id="bundler"
+                  name="bundler"
+                  value={formData.bundler ?? "vite"}
+                  onChange={handleChange}
+                >
+                  <SelectOption value="vite">Vite</SelectOption>
+                  <SelectOption value="webpack">Webpack</SelectOption>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Build tool used by the micro-app
+                </p>
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="displayOrder">Display Order</Label>
                 <Input
                   id="displayOrder"
@@ -317,7 +334,9 @@ export default function EditAppPage({ appId }: EditAppPageProps) {
                   Order in sidebar (0 = first)
                 </p>
               </div>
+            </div>
 
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Status</Label>
                 <div className="flex items-center gap-3 h-10">

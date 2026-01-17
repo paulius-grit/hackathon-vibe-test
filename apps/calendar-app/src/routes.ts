@@ -1,4 +1,5 @@
 import { defineRoutes, type MicroAppModule } from "@mf-hub/router";
+import "./index.css";
 import App from "./App";
 import InfoPage from "./pages/InfoPage";
 import { MicroNotFoundPage } from "./components/MicroNotFoundPage";

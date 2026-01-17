@@ -3,6 +3,8 @@
  * Matches the admin-api response structure
  */
 
+export type BundlerType = "vite" | "webpack";
+
 export interface RemoteApp {
   id: string;
   name: string;
@@ -11,6 +13,7 @@ export interface RemoteApp {
   url: string;
   scope: string;
   module: string;
+  bundler: BundlerType;
   isActive: boolean;
   displayOrder: number;
   createdAt: string;
@@ -24,6 +27,7 @@ export interface CreateRemoteAppInput {
   url: string;
   scope: string;
   module: string;
+  bundler?: BundlerType;
   isActive?: boolean;
   displayOrder?: number;
 }
@@ -35,6 +39,7 @@ export interface UpdateRemoteAppInput {
   url?: string;
   scope?: string;
   module?: string;
+  bundler?: BundlerType;
   isActive?: boolean;
   displayOrder?: number;
 }

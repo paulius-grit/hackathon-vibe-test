@@ -11,7 +11,7 @@ const API_BASE_URL = "http://localhost:4000/api";
  * Fetch all remote apps
  */
 export async function getAllRemoteApps(
-  activeOnly = false
+  activeOnly = false,
 ): Promise<RemoteApp[]> {
   const url = activeOnly
     ? `${API_BASE_URL}/remote-apps?active=true`
@@ -45,7 +45,7 @@ export async function getRemoteAppById(id: string): Promise<RemoteApp> {
  * Create a new remote app
  */
 export async function createRemoteApp(
-  input: CreateRemoteAppInput
+  input: CreateRemoteAppInput,
 ): Promise<RemoteApp> {
   const response = await fetch(`${API_BASE_URL}/remote-apps`, {
     method: "POST",
@@ -69,7 +69,7 @@ export async function createRemoteApp(
  */
 export async function updateRemoteApp(
   id: string,
-  input: UpdateRemoteAppInput
+  input: UpdateRemoteAppInput,
 ): Promise<RemoteApp> {
   const response = await fetch(`${API_BASE_URL}/remote-apps/${id}`, {
     method: "PUT",

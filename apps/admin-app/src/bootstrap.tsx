@@ -31,5 +31,5 @@ createRoot(rootElement).render(
         useBrowserHistory={true}
       />
     </div>
-  </StrictMode>
+  </StrictMode>,
 );

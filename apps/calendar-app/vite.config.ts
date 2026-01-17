@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import federation from "@originjs/vite-plugin-federation";
+import { federation } from "@module-federation/vite";
 
 export default defineConfig({
   plugins: [
@@ -11,7 +11,20 @@ export default defineConfig({
       exposes: {
         "./routes": "./src/routes.ts",
       },
-      shared: ["react", "react-dom", "@tanstack/react-router"],
+      shared: {
+        react: {
+          singleton: true,
+          requiredVersion: "^18.0.0",
+        },
+        "react-dom": {
+          singleton: true,
+          requiredVersion: "^18.0.0",
+        },
+        "@tanstack/react-router": {
+          singleton: true,
+          requiredVersion: "^1.45.0",
+        },
+      },
     }),
   ],
   server: {

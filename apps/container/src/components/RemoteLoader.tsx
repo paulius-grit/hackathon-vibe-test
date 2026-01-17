@@ -1,5 +1,9 @@
 import { useState, useEffect, type ReactNode } from "react";
-import { loadRemoteByUrl, type LoadRemoteResult } from "@mf-hub/loader";
+import {
+  loadRemoteByUrl,
+  type LoadRemoteResult,
+  type BundlerType,
+} from "@mf-hub/loader";
 import {
   MicroAppRenderer,
   type MicroAppModule,
@@ -7,6 +11,47 @@ import {
 } from "@mf-hub/router";
 import { Card, CardContent, Skeleton } from "@mf-hub/ui";
 import { ErrorBoundary } from "./ErrorBoundary";
+
+/**
+ * Load CSS from the remote app's dist folder
+ * This ensures micro-app styles are loaded when the remote is mounted
+ */
+async function loadRemoteCSS(url: string, scope: string): Promise<void> {
+  // Check if CSS is already loaded for this scope
+  const linkId = `remote-css-${scope}`;
+  if (document.getElementById(linkId)) {
+    return;
+  }
+
+  // Try to fetch the style.css file from the remote
+  // @module-federation/vite outputs CSS to /assets/style-*.css
+  const cleanUrl = url.endsWith("/") ? url.slice(0, -1) : url;
+  
+  try {
+    // First, try to find the CSS file by fetching the index.html and parsing it
+    const indexResponse = await fetch(`${cleanUrl}/index.html`);
+    if (indexResponse.ok) {
+      const html = await indexResponse.text();
+      // Extract CSS link from the HTML
+      const cssMatch = html.match(/href=["']([^"']*style[^"']*\.css)["']/);
+      if (cssMatch && cssMatch[1]) {
+        const cssPath = cssMatch[1];
+        const cssUrl = cssPath.startsWith("http") 
+          ? cssPath 
+          : `${cleanUrl}${cssPath.startsWith("/") ? "" : "/"}${cssPath}`;
+        
+        const link = document.createElement("link");
+        link.id = linkId;
+        link.rel = "stylesheet";
+        link.href = cssUrl;
+        document.head.appendChild(link);
+        return;
+      }
+    }
+  } catch {
+    // Ignore errors - CSS might not be available or might be loaded differently
+  }
+}
 
 interface RemoteLoaderProps {
   /** Name of the app (used for routing base path) */
@@ -17,6 +62,8 @@ interface RemoteLoaderProps {
   scope: string;
   /** Module to load (defaults to ./routes) */
   module?: string;
+  /** Bundler type: 'vite' or 'webpack' (defaults to 'vite') */
+  bundler?: BundlerType;
   /** Loading fallback */
   fallback?: ReactNode;
   /** Error fallback */
@@ -37,6 +84,7 @@ export function RemoteLoader({
   url,
   scope,
   module = "./routes",
+  bundler = "vite",
   fallback = <DefaultFallback />,
   errorFallback,
   initialPath = "/",
@@ -53,10 +101,15 @@ export function RemoteLoader({
     const load = async () => {
       setState({ status: "loading" });
 
+      // Load CSS from the remote app in parallel with the module
+      loadRemoteCSS(url, scope);
+
       const result: LoadRemoteResult<MicroAppModule> = await loadRemoteByUrl(
         url,
         scope,
-        module
+        module,
+        {},
+        bundler,
       );
 
       if (cancelled) return;
@@ -70,7 +123,7 @@ export function RemoteLoader({
             status: "error",
             error: new Error(
               `Remote "${scope}" does not export a valid routeConfig. ` +
-                `Expected { routeConfig: { routes: [...] } }`
+                `Expected { routeConfig: { routes: [...] } }`,
             ),
           });
           return;
@@ -92,7 +145,7 @@ export function RemoteLoader({
     return () => {
       cancelled = true;
     };
-  }, [url, scope, module, basePath]);
+  }, [url, scope, module, bundler, basePath]);
 
   if (state.status === "loading") {
     return <>{fallback}</>;
