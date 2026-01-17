@@ -52,12 +52,13 @@ export default function CreateAppPage() {
     url: "",
     scope: "",
     module: "./routes",
+    bundler: "vite",
     isActive: true,
     displayOrder: 0,
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -234,6 +235,22 @@ export default function CreateAppPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
+                <Label htmlFor="bundler">Bundler</Label>
+                <Select
+                  id="bundler"
+                  name="bundler"
+                  value={formData.bundler}
+                  onChange={handleChange}
+                >
+                  <SelectOption value="vite">Vite</SelectOption>
+                  <SelectOption value="webpack">Webpack</SelectOption>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Build tool used by the micro-app
+                </p>
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="displayOrder">Display Order</Label>
                 <Input
                   id="displayOrder"
@@ -247,7 +264,9 @@ export default function CreateAppPage() {
                   Order in sidebar (0 = first)
                 </p>
               </div>
+            </div>
 
+            <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Status</Label>
                 <div className="flex items-center gap-3 h-10">

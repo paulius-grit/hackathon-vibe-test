@@ -94,7 +94,7 @@ export function Shell({ children }: ShellProps) {
         className={cn(
           "flex-shrink-0 flex flex-col bg-[hsl(var(--sidebar))] text-[hsl(var(--sidebar-foreground))]",
           "transition-all duration-300 ease-out",
-          isCollapsed ? "w-14" : "w-56"
+          isCollapsed ? "w-14" : "w-56",
         )}
       >
         {/* Logo */}
@@ -103,7 +103,7 @@ export function Shell({ children }: ShellProps) {
             "flex items-center border-b border-[hsl(var(--sidebar-border))]",
             "transition-all duration-300",
             "py-3 px-4",
-            isCollapsed ? "justify-center" : "gap-3"
+            isCollapsed ? "justify-center" : "gap-3",
           )}
         >
           <Container className="w-5 h-5 shrink-0" />
@@ -111,7 +111,7 @@ export function Shell({ children }: ShellProps) {
             className={cn(
               "text-base font-semibold tracking-tight whitespace-nowrap overflow-hidden",
               "transition-all duration-300",
-              isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+              isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100",
             )}
           >
             Gritbench
@@ -132,7 +132,7 @@ export function Shell({ children }: ShellProps) {
           <div
             className={cn(
               "my-2 transition-all duration-300",
-              isCollapsed ? "px-0 h-0" : "px-2 h-auto"
+              isCollapsed ? "px-0 h-0" : "px-2 h-auto",
             )}
           >
             {!isCollapsed && (
@@ -151,7 +151,7 @@ export function Shell({ children }: ShellProps) {
             <p
               className={cn(
                 "text-sm text-[hsl(var(--sidebar-foreground))]/40 transition-all duration-300",
-                isCollapsed ? "px-2 opacity-0" : "px-3 py-2 opacity-100"
+                isCollapsed ? "px-2 opacity-0" : "px-3 py-2 opacity-100",
               )}
             >
               No apps configured
@@ -180,7 +180,7 @@ export function Shell({ children }: ShellProps) {
             onClick={() => setIsCollapsed(!isCollapsed)}
             className={cn(
               "w-full justify-center text-[hsl(var(--sidebar-foreground))]/70",
-              "hover:text-[hsl(var(--sidebar-foreground))] hover:bg-[hsl(var(--sidebar-muted))]"
+              "hover:text-[hsl(var(--sidebar-foreground))] hover:bg-[hsl(var(--sidebar-muted))]",
             )}
           >
             {isCollapsed ? (
@@ -208,7 +208,7 @@ export function Shell({ children }: ShellProps) {
                       "transition-all duration-200 group",
                       currentPath.startsWith(`/apps/${app.name}`)
                         ? "bg-background text-foreground shadow-s border-gray-200"
-                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                        : "text-muted-foreground hover:text-foreground hover:bg-background/50",
                     )}
                   >
                     <button
@@ -223,7 +223,7 @@ export function Shell({ children }: ShellProps) {
                       className={cn(
                         "ml-1 rounded-sm p-0.5 -mr-1",
                         "opacity-0 group-hover:opacity-60 hover:!opacity-100",
-                        "transition-opacity"
+                        "transition-opacity",
                       )}
                     >
                       <X className="w-3.5 h-3.5" />
@@ -271,7 +271,7 @@ function NavLink({
         isCollapsed ? "justify-center p-2" : "gap-3 p-2",
         isActive
           ? "bg-[hsl(var(--sidebar-accent))] text-white"
-          : "text-[hsl(var(--sidebar-foreground))]/70 hover:text-[hsl(var(--sidebar-foreground))] hover:bg-[hsl(var(--sidebar-muted))]"
+          : "text-[hsl(var(--sidebar-foreground))]/70 hover:text-[hsl(var(--sidebar-foreground))] hover:bg-[hsl(var(--sidebar-muted))]",
       )}
     >
       <IconComponent
@@ -281,7 +281,7 @@ function NavLink({
         className={cn(
           "text-sm whitespace-nowrap overflow-hidden",
           "transition-all duration-300",
-          isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+          isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100",
         )}
       >
         {children}

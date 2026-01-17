@@ -3,63 +3,82 @@ import type {
   LoadRemoteResult,
   LoadRemoteOptions,
   RemoteAppDescriptor,
+  BundlerType,
 } from "./types";
 import { getRemoteConfig, hasRemote, updateRemoteStatus } from "./registry";
 
-// Config type for federation remote
-export interface FederationRemoteConfig {
-  url: (() => Promise<string>) | string;
-  format: "esm" | "systemjs" | "var";
-  from: "vite" | "webpack";
-}
-
-// Types for federation methods that will be provided by the container
-export interface FederationMethods {
-  setRemote: (name: string, config: FederationRemoteConfig) => void;
-  getRemote: (scope: string, module: string) => Promise<unknown>;
-  unwrapDefault: (module: unknown) => unknown;
-  ensure: (remoteName: string) => Promise<unknown>;
-}
-
-// Federation methods - must be set by the consuming app
-let federationMethods: FederationMethods | null = null;
+/**
+ * Type for the Module Federation loadRemote function
+ * This is the unified API from @module-federation/enhanced/runtime
+ * Uses a loose typing to be compatible with different versions of the runtime
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type MFLoadRemote = (id: string, options?: Record<string, any>) => Promise<any>;
 
 /**
- * Initialize the loader with federation methods from the container app
- * Call this from your container's bootstrap.tsx after importing from virtual:__federation__
+ * Type for registering remotes dynamically
+ */
+export interface MFRemoteInfo {
+  name: string;
+  entry: string;
+  type?: "esm" | "global" | "system";
+}
+
+/**
+ * Type for the registerRemotes function from @module-federation/enhanced/runtime
+ */
+export type MFRegisterRemotes = (remotes: MFRemoteInfo[], options?: { force?: boolean }) => void;
+
+// Runtime methods - set by initFederation
+let mfLoadRemote: MFLoadRemote | null = null;
+let mfRegisterRemotes: MFRegisterRemotes | null = null;
+
+/**
+ * Configuration for initializing the federation loader
+ */
+export interface FederationConfig {
+  loadRemote: MFLoadRemote;
+  registerRemotes?: MFRegisterRemotes;
+}
+
+/**
+ * Initialize the loader with Module Federation runtime methods
+ * Call this from your container's bootstrap.tsx after initializing @module-federation/enhanced
  *
  * @example
  * ```ts
- * import {
- *   __federation_method_setRemote,
- *   __federation_method_getRemote,
- *   __federation_method_unwrapDefault
- * } from "virtual:__federation__";
+ * import { init, loadRemote, registerRemotes } from "@module-federation/enhanced/runtime";
  * import { initFederation } from "@mf-hub/loader";
  *
+ * init({
+ *   name: "container",
+ *   remotes: [],
+ *   shared: { ... }
+ * });
+ *
  * initFederation({
- *   setRemote: __federation_method_setRemote,
- *   getRemote: __federation_method_getRemote,
- *   unwrapDefault: __federation_method_unwrapDefault,
+ *   loadRemote,
+ *   registerRemotes,
  * });
  * ```
  */
-export const initFederation = (methods: FederationMethods): void => {
-  federationMethods = methods;
+export const initFederation = (config: FederationConfig): void => {
+  mfLoadRemote = config.loadRemote;
+  mfRegisterRemotes = config.registerRemotes ?? null;
 };
 
 /**
  * Check if federation is initialized
  */
 export const isFederationInitialized = (): boolean => {
-  return federationMethods !== null;
+  return mfLoadRemote !== null;
 };
 
 // Cache for loaded modules
 const moduleCache = new Map<string, unknown>();
 
 // Track registered remotes to avoid re-registering
-const registeredRemotes = new Set<string>();
+const registeredRemotes = new Map<string, string>();
 
 /**
  * Default options for loading remotes
@@ -77,7 +96,7 @@ const createTimeout = (ms: number): Promise<never> => {
   return new Promise((_, reject) => {
     setTimeout(
       () => reject(new Error(`Remote loading timed out after ${ms}ms`)),
-      ms
+      ms,
     );
   });
 };
@@ -91,32 +110,45 @@ const delay = (ms: number): Promise<void> => {
 
 /**
  * Build the remote entry URL from a base URL
- * Vite plugin federation puts remoteEntry.js in /assets/
+ * Vite puts remoteEntry.js at root, Webpack puts it in /assets/
  */
-const buildRemoteEntryUrl = (baseUrl: string): string => {
+const buildRemoteEntryUrl = (baseUrl: string, bundler: BundlerType = "vite"): string => {
   const cleanUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
-  return `${cleanUrl}/assets/remoteEntry.js`;
+  if (bundler === "webpack") {
+    return `${cleanUrl}/assets/remoteEntry.js`;
+  }
+  return `${cleanUrl}/remoteEntry.js`;
 };
 
 /**
- * Register a remote with the federation runtime
+ * Register a remote dynamically with the Module Federation runtime
  */
-const ensureRemoteRegistered = (name: string, url: string): void => {
-  if (!federationMethods) {
-    throw new Error("Federation not initialized. Call initFederation() first.");
-  }
-
-  if (registeredRemotes.has(name)) {
+const ensureRemoteRegistered = (
+  scope: string, 
+  url: string, 
+  bundler: BundlerType = "vite"
+): void => {
+  const entryUrl = buildRemoteEntryUrl(url, bundler);
+  
+  // Check if already registered with the same URL
+  if (registeredRemotes.get(scope) === entryUrl) {
     return;
   }
 
-  federationMethods.setRemote(name, {
-    url: buildRemoteEntryUrl(url),
-    format: "esm",
-    from: "vite",
-  });
+  // For dynamic registration, we need to use registerRemotes if available
+  // Otherwise, we'll rely on the loadRemote handling it via the entry URL
+  if (mfRegisterRemotes) {
+    mfRegisterRemotes([
+      {
+        name: scope,
+        entry: entryUrl,
+        // Both Vite and Webpack use 'global' type when served from remoteEntry.js
+        type: bundler === "webpack" ? "global" : "esm",
+      },
+    ], { force: true });
+  }
 
-  registeredRemotes.add(name);
+  registeredRemotes.set(scope, entryUrl);
 };
 
 /**
@@ -124,7 +156,7 @@ const ensureRemoteRegistered = (name: string, url: string): void => {
  */
 export const loadRemote = async <T = unknown>(
   remoteName: string,
-  options: LoadRemoteOptions = {}
+  options: LoadRemoteOptions = {},
 ): Promise<LoadRemoteResult<T>> => {
   const config = getRemoteConfig(remoteName);
 
@@ -140,23 +172,15 @@ export const loadRemote = async <T = unknown>(
 
 /**
  * Load a remote module by configuration
- * Uses vite-plugin-federation's virtual:__federation__ APIs
+ * Uses the unified @module-federation/enhanced runtime API
+ * Works with both Vite and Webpack remotes transparently
  */
 export const loadRemoteByConfig = async <T = unknown>(
   config: RemoteConfig,
-  options: LoadRemoteOptions = {}
+  options: LoadRemoteOptions = {},
 ): Promise<LoadRemoteResult<T>> => {
-  if (!federationMethods) {
-    return {
-      success: false,
-      error: new Error(
-        "Federation not initialized. Call initFederation() first."
-      ),
-    };
-  }
-
   const opts = { ...defaultOptions, ...options };
-  const { scope, url, module = "./App", name } = config;
+  const { scope, url, module = "./routes", name, bundler = "vite" } = config;
   const cacheKey = `${scope}:${module}`;
 
   // Check module cache
@@ -172,30 +196,34 @@ export const loadRemoteByConfig = async <T = unknown>(
     updateRemoteStatus(name, "loading");
   }
 
+  if (!mfLoadRemote) {
+    return {
+      success: false,
+      error: new Error("Federation not initialized. Call initFederation() first."),
+    };
+  }
+
   let lastError: Error = new Error("Unknown error");
 
   for (let attempt = 0; attempt <= opts.retries; attempt++) {
     try {
-      const loadPromise = (async () => {
-        // Register the remote with federation runtime
-        ensureRemoteRegistered(scope, url);
+      // Register the remote dynamically
+      ensureRemoteRegistered(scope, url, bundler);
 
-        // Ensure the remote is initialized (loads remoteEntry.js and initializes share scope)
-        await federationMethods!.ensure(scope);
-
-        // Use federation's getRemote to load the module
-        const remoteModule = await federationMethods!.getRemote(scope, module);
-
-        // Unwrap the default export
-        const unwrapped = federationMethods!.unwrapDefault(remoteModule);
-
-        return unwrapped as T;
-      })();
+      // Use Module Federation's unified loadRemote API
+      // Format: "scope/module" (e.g., "demoApp/routes")
+      const moduleId = `${scope}${module.startsWith("./") ? module.slice(1) : `/${module}`}`;
+      
+      const loadPromise = mfLoadRemote(moduleId, { from: "runtime" }) as Promise<T>;
 
       const result = await Promise.race([
         loadPromise,
         createTimeout(opts.timeout),
       ]);
+
+      if (result === null) {
+        throw new Error(`Failed to load module "${moduleId}": module returned null`);
+      }
 
       // Cache the result
       moduleCache.set(cacheKey, result);
@@ -231,7 +259,8 @@ export const loadRemoteByUrl = async <T = unknown>(
   url: string,
   scope: string,
   module: string = "./App",
-  options: LoadRemoteOptions = {}
+  options: LoadRemoteOptions = {},
+  bundler: BundlerType = "vite",
 ): Promise<LoadRemoteResult<T>> => {
   // Create an ephemeral config for the loader
   const config: RemoteConfig = {
@@ -239,6 +268,7 @@ export const loadRemoteByUrl = async <T = unknown>(
     url,
     scope,
     module,
+    bundler,
   };
 
   return loadRemoteByConfig<T>(config, options);
@@ -250,14 +280,18 @@ export const loadRemoteByUrl = async <T = unknown>(
  */
 export const loadRemoteByDescriptor = async <T = unknown>(
   descriptor: RemoteAppDescriptor,
-  options: LoadRemoteOptions = {}
+  options: LoadRemoteOptions = {},
 ): Promise<LoadRemoteResult<T>> => {
-  return loadRemoteByUrl<T>(
-    descriptor.url,
-    descriptor.scope,
-    descriptor.module,
-    options
-  );
+  // Create an ephemeral config for the loader
+  const config: RemoteConfig = {
+    name: `dynamic_${descriptor.scope}_${Date.now()}`,
+    url: descriptor.url,
+    scope: descriptor.scope,
+    module: descriptor.module,
+    bundler: descriptor.bundler,
+  };
+
+  return loadRemoteByConfig<T>(config, options);
 };
 
 /**
@@ -265,7 +299,7 @@ export const loadRemoteByDescriptor = async <T = unknown>(
  */
 export const preloadRemote = (
   remoteName: string,
-  options: LoadRemoteOptions = {}
+  options: LoadRemoteOptions = {},
 ): void => {
   loadRemote(remoteName, options).catch(() => {
     // Silently handle preload failures

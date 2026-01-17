@@ -28,7 +28,7 @@ function Dialog({ open = false, onOpenChange, children }: DialogProps) {
     (newOpen: boolean) => {
       onOpenChange?.(newOpen);
     },
-    [onOpenChange]
+    [onOpenChange],
   );
 
   return (
@@ -38,8 +38,7 @@ function Dialog({ open = false, onOpenChange, children }: DialogProps) {
   );
 }
 
-export interface DialogTriggerProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface DialogTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   asChild?: boolean;
 }
 
@@ -64,12 +63,11 @@ const DialogTrigger = React.forwardRef<HTMLButtonElement, DialogTriggerProps>(
         {children}
       </button>
     );
-  }
+  },
 );
 DialogTrigger.displayName = "DialogTrigger";
 
-export interface DialogContentProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export interface DialogContentProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
   ({ className, children, ...props }, ref) => {
@@ -117,40 +115,37 @@ const DialogContent = React.forwardRef<HTMLDivElement, DialogContentProps>(
         </div>
       </div>
     );
-  }
+  },
 );
 DialogContent.displayName = "DialogContent";
 
-export interface DialogHeaderProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export interface DialogHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const DialogHeader = ({ className, ...props }: DialogHeaderProps) => (
   <div
     className={cn(
       "flex flex-col space-y-1.5 text-center sm:text-left",
-      className
+      className,
     )}
     {...props}
   />
 );
 DialogHeader.displayName = "DialogHeader";
 
-export interface DialogFooterProps
-  extends React.HTMLAttributes<HTMLDivElement> {}
+export interface DialogFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const DialogFooter = ({ className, ...props }: DialogFooterProps) => (
   <div
     className={cn(
       "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
-      className
+      className,
     )}
     {...props}
   />
 );
 DialogFooter.displayName = "DialogFooter";
 
-export interface DialogTitleProps
-  extends React.HTMLAttributes<HTMLHeadingElement> {}
+export interface DialogTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {}
 
 const DialogTitle = React.forwardRef<HTMLHeadingElement, DialogTitleProps>(
   ({ className, ...props }, ref) => (
@@ -158,16 +153,15 @@ const DialogTitle = React.forwardRef<HTMLHeadingElement, DialogTitleProps>(
       ref={ref}
       className={cn(
         "text-lg font-semibold leading-none tracking-tight",
-        className
+        className,
       )}
       {...props}
     />
-  )
+  ),
 );
 DialogTitle.displayName = "DialogTitle";
 
-export interface DialogDescriptionProps
-  extends React.HTMLAttributes<HTMLParagraphElement> {}
+export interface DialogDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement> {}
 
 const DialogDescription = React.forwardRef<
   HTMLParagraphElement,
@@ -181,8 +175,7 @@ const DialogDescription = React.forwardRef<
 ));
 DialogDescription.displayName = "DialogDescription";
 
-export interface DialogCloseProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+export interface DialogCloseProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
 const DialogClose = React.forwardRef<HTMLButtonElement, DialogCloseProps>(
   ({ onClick, ...props }, ref) => {
@@ -194,7 +187,7 @@ const DialogClose = React.forwardRef<HTMLButtonElement, DialogCloseProps>(
     };
 
     return <button ref={ref} onClick={handleClick} {...props} />;
-  }
+  },
 );
 DialogClose.displayName = "DialogClose";
 

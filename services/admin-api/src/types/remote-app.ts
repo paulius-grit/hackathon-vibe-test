@@ -1,6 +1,11 @@
 import { z } from "zod";
 
 /**
+ * Bundler type for the remote application
+ */
+export type BundlerType = "vite" | "webpack";
+
+/**
  * Database model for remote apps
  */
 export interface RemoteAppModel {
@@ -11,6 +16,7 @@ export interface RemoteAppModel {
   url: string;
   scope: string;
   module: string;
+  bundler: BundlerType;
   is_active: boolean;
   display_order: number;
   created_at: Date;
@@ -28,6 +34,7 @@ export interface RemoteAppDto {
   url: string;
   scope: string;
   module: string;
+  bundler: BundlerType;
   isActive: boolean;
   displayOrder: number;
   createdAt: string;
@@ -48,6 +55,7 @@ export const createRemoteAppSchema = z.object({
   url: z.string().url("URL must be valid"),
   scope: z.string().min(1, "Scope is required").max(100),
   module: z.string().min(1, "Module is required").max(100),
+  bundler: z.enum(["vite", "webpack"]).default("vite"),
   isActive: z.boolean().default(true),
   displayOrder: z.number().int().min(0).default(0),
 });
@@ -67,6 +75,7 @@ export const updateRemoteAppSchema = z.object({
   url: z.string().url("URL must be valid").optional(),
   scope: z.string().min(1).max(100).optional(),
   module: z.string().min(1).max(100).optional(),
+  bundler: z.enum(["vite", "webpack"]).optional(),
   isActive: z.boolean().optional(),
   displayOrder: z.number().int().min(0).optional(),
 });
@@ -79,7 +88,7 @@ export const reorderAppsSchema = z.object({
     z.object({
       id: z.string().uuid(),
       displayOrder: z.number().int().min(0),
-    })
+    }),
   ),
 });
 
@@ -99,6 +108,7 @@ export function toDto(model: RemoteAppModel): RemoteAppDto {
     url: model.url,
     scope: model.scope,
     module: model.module,
+    bundler: model.bundler,
     isActive: model.is_active,
     displayOrder: model.display_order,
     createdAt: new Date(model.created_at).toISOString(),
@@ -110,7 +120,7 @@ export function toDto(model: RemoteAppModel): RemoteAppDto {
  * Transform API input to database model fields
  */
 export function toModel(
-  input: CreateRemoteAppInput | UpdateRemoteAppInput
+  input: CreateRemoteAppInput | UpdateRemoteAppInput,
 ): Partial<RemoteAppModel> {
   const model: Partial<RemoteAppModel> = {};
 
@@ -121,6 +131,8 @@ export function toModel(
   if ("scope" in input && input.scope !== undefined) model.scope = input.scope;
   if ("module" in input && input.module !== undefined)
     model.module = input.module;
+  if ("bundler" in input && input.bundler !== undefined)
+    model.bundler = input.bundler;
   if ("isActive" in input && input.isActive !== undefined)
     model.is_active = input.isActive;
   if ("displayOrder" in input && input.displayOrder !== undefined)

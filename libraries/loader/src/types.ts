@@ -1,4 +1,9 @@
 /**
+ * Bundler type for the remote application
+ */
+export type BundlerType = "vite" | "webpack";
+
+/**
  * Configuration for a remote micro frontend application
  */
 export interface RemoteConfig {
@@ -10,6 +15,8 @@ export interface RemoteConfig {
   scope: string;
   /** Optional: specific module to load (defaults to "./App") */
   module?: string;
+  /** Bundler type: 'vite' or 'webpack' (defaults to 'vite') */
+  bundler?: BundlerType;
 }
 
 /**
@@ -57,6 +64,8 @@ export interface RemoteAppDescriptor {
   scope: string;
   /** Optional: specific module to load (defaults to "./App") */
   module?: string;
+  /** Bundler type: 'vite' or 'webpack' (defaults to 'vite') */
+  bundler?: BundlerType;
   /** Optional: any additional metadata about the app */
   metadata?: Record<string, unknown>;
 }

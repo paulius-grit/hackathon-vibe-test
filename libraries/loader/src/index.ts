@@ -8,9 +8,10 @@ export type {
   RemoteStatus,
   RemoteState,
   RemoteAppDescriptor,
+  BundlerType,
 } from "./types";
 
-export type { FederationMethods, FederationRemoteConfig } from "./loadRemote";
+export type { FederationConfig, MFLoadRemote, MFRegisterRemotes, MFRemoteInfo } from "./loadRemote";
 
 // Registry functions
 export {

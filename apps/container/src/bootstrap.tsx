@@ -1,25 +1,50 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import {
-  __federation_method_setRemote,
-  __federation_method_getRemote,
-  __federation_method_unwrapDefault,
-  __federation_method_ensure,
-} from "virtual:__federation__";
+import { init, loadRemote as mfLoadRemote, registerRemotes } from "@module-federation/enhanced/runtime";
 import { initFederation } from "@mf-hub/loader";
 import { LoadedAppsProvider } from "./context/LoadedAppsContext";
 import { RemoteAppConfig, RemotesProvider } from "./context/RemotesContext";
 import { routeTree } from "./routeTree.gen";
 import "./index.css";
 
-// Initialize federation with the virtual module methods
-// This enables the loader library to register and load remote modules
+// Initialize Module Federation runtime
+init({
+  name: "container",
+  remotes: [],
+  shared: {
+    react: {
+      version: "18.3.1",
+      lib: () => import("react"),
+      shareConfig: {
+        singleton: true,
+        requiredVersion: "^18.0.0",
+      },
+    },
+    "react-dom": {
+      version: "18.3.1",
+      lib: () => import("react-dom"),
+      shareConfig: {
+        singleton: true,
+        requiredVersion: "^18.0.0",
+      },
+    },
+    "@tanstack/react-router": {
+      version: "1.45.0",
+      lib: () => import("@tanstack/react-router"),
+      shareConfig: {
+        singleton: true,
+        requiredVersion: "^1.45.0",
+      },
+    },
+  },
+});
+
+// Initialize the loader with the Module Federation runtime API
+// Use a wrapper to match the loader's expected type signature
 initFederation({
-  setRemote: __federation_method_setRemote,
-  getRemote: __federation_method_getRemote,
-  unwrapDefault: __federation_method_unwrapDefault,
-  ensure: __federation_method_ensure,
+  loadRemote: (id, options) => mfLoadRemote(id, { from: "runtime", ...options }),
+  registerRemotes: registerRemotes,
 });
 
 // Fallback remotes in case API is unavailable

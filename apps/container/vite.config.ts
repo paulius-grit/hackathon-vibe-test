@@ -1,6 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import federation from "@originjs/vite-plugin-federation";
+import { federation } from "@module-federation/vite";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import { resolve } from "path";
 
@@ -10,18 +10,22 @@ export default defineConfig({
     react(),
     federation({
       name: "container",
-      // Add a placeholder remote to force the plugin to generate proper share scope code
-      // Actual remotes are loaded dynamically at runtime via the loader library
-      remotes: {
-        // This placeholder is never actually loaded - it just triggers proper share scope generation
-        __placeholder__: {
-          external:
-            "http://localhost:9999/__placeholder__/assets/remoteEntry.js",
-          format: "esm",
-          from: "vite",
+      // No remotes - all remotes are loaded dynamically at runtime via the loader library
+      remotes: {},
+      shared: {
+        react: {
+          singleton: true,
+          requiredVersion: "^18.0.0",
+        },
+        "react-dom": {
+          singleton: true,
+          requiredVersion: "^18.0.0",
+        },
+        "@tanstack/react-router": {
+          singleton: true,
+          requiredVersion: "^1.45.0",
         },
       },
-      shared: ["react", "react-dom", "@tanstack/react-router"],
     }),
   ],
   resolve: {

@@ -6,8 +6,9 @@
       "title": "Demo App",
       "icon": "Target",
       "url": "http://localhost:3001",
-      "scope": "demo-app",
-      "module": "./App",
+      "scope": "demoApp",
+      "module": "./routes",
+      "bundler": "vite",
       "is_active": true,
       "display_order": 1,
       "created_at": "2026-01-13T23:47:58.850Z",
@@ -20,24 +21,26 @@
       "icon": "Calendar",
       "url": "http://localhost:3002",
       "scope": "calendarApp",
-      "module": "./App",
+      "module": "./routes",
+      "bundler": "vite",
       "is_active": true,
       "display_order": 2,
       "created_at": "2026-01-13T23:47:58.850Z",
       "updated_at": "2026-01-13T23:47:58.850Z"
     },
     {
-      "id": "a9b223e7-594a-4350-b431-a9ed2d9c2cad",
-      "name": "fake-app",
-      "title": "Fake App",
-      "icon": "Compass",
+      "id": "c8e4f2a1-3b5d-4e6f-a7c8-9d0e1f2a3b4c",
+      "name": "webpack-demo",
+      "title": "Webpack Demo",
+      "icon": "Box",
       "url": "http://localhost:3004",
-      "scope": "fake-app",
+      "scope": "webpackDemoApp",
       "module": "./routes",
+      "bundler": "webpack",
       "is_active": true,
-      "display_order": 0,
-      "created_at": "2026-01-16T23:08:16.001Z",
-      "updated_at": "2026-01-16T23:08:48.416Z"
+      "display_order": 3,
+      "created_at": "2026-01-17T00:00:00.000Z",
+      "updated_at": "2026-01-17T00:00:00.000Z"
     }
   ]
 }

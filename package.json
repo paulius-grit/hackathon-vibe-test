@@ -12,6 +12,7 @@
     "container:preview": "pnpm --filter @mf-hub/container preview",
     "calendar:preview": "pnpm --filter @mf-hub/calendar-app preview",
     "admin:preview": "pnpm --filter @mf-hub/admin-app preview",
+    "webpack:preview": "pnpm --filter @mf-hub/webpack-demo-app preview",
     "dev:api": "pnpm --filter @mf-hub/admin-api dev",
     "build:api": "pnpm --filter @mf-hub/admin-api build",
     "db:migrate": "pnpm --filter @mf-hub/admin-api migrate",
