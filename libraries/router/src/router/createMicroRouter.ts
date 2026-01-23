@@ -34,7 +34,7 @@ export interface CreateMicroRouterOptions {
  */
 function buildRouteTree(
   routes: MicroRoute[],
-  parentRoute: AnyRoute
+  parentRoute: AnyRoute,
 ): AnyRoute[] {
   return routes.map((routeDef) => {
     // For index routes (path "/"), we use "/" as the path
@@ -71,7 +71,7 @@ function buildRouteTree(
  * the micro-app routing from the browser URL.
  */
 export function createMicroRouter(
-  options: CreateMicroRouterOptions
+  options: CreateMicroRouterOptions,
 ): Router<AnyRoute> {
   const {
     config,

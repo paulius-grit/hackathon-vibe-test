@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -63,6 +63,24 @@ const App: React.FC = () => {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
+  // Auto-select today's date on component mount
+  useEffect(() => {
+    const todayDate = new Date();
+    const dayName = todayDate.toLocaleDateString("en-US", {
+      weekday: "long",
+    });
+    const randomHoroscope =
+      HOROSCOPE_MESSAGES[
+        Math.floor(Math.random() * HOROSCOPE_MESSAGES.length)
+      ] ?? "";
+
+    setSelectedDay({
+      date: todayDate,
+      dayName,
+      horoscope: randomHoroscope,
+    });
+  }, []);
+
   // Get first day of month and number of days
   const firstDayOfMonth = new Date(year, month, 1);
   const lastDayOfMonth = new Date(year, month + 1, 0);
@@ -120,15 +138,18 @@ const App: React.FC = () => {
           onClick={() => handleDayClick(day)}
           className={cn(
             "aspect-square flex items-center justify-center rounded-lg text-sm font-medium",
-            "transition-all duration-200 ease-out",
-            "hover:bg-accent hover:scale-105 active:scale-95",
-            isToday && !isSelected && "bg-primary text-primary-foreground",
-            isSelected && "bg-violet-600 text-white shadow-md",
-            !isToday && !isSelected && "bg-card border border-border"
+            "transition-colors duration-200",
+            "hover:bg-violet-100 hover:text-violet-700",
+            isToday &&
+              !isSelected &&
+              "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground",
+            isSelected &&
+              "bg-violet-600 text-white hover:bg-violet-700 hover:text-white",
+            !isToday && !isSelected && "bg-card border border-border",
           )}
         >
           {day}
-        </button>
+        </button>,
       );
     }
 
