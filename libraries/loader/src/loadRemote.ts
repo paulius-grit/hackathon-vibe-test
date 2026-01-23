@@ -13,7 +13,10 @@ import { getRemoteConfig, hasRemote, updateRemoteStatus } from "./registry";
  * Uses a loose typing to be compatible with different versions of the runtime
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type MFLoadRemote = (id: string, options?: Record<string, any>) => Promise<any>;
+export type MFLoadRemote = (
+  id: string,
+  options?: Record<string, any>,
+) => Promise<any>;
 
 /**
  * Type for registering remotes dynamically
@@ -27,7 +30,10 @@ export interface MFRemoteInfo {
 /**
  * Type for the registerRemotes function from @module-federation/enhanced/runtime
  */
-export type MFRegisterRemotes = (remotes: MFRemoteInfo[], options?: { force?: boolean }) => void;
+export type MFRegisterRemotes = (
+  remotes: MFRemoteInfo[],
+  options?: { force?: boolean },
+) => void;
 
 // Runtime methods - set by initFederation
 let mfLoadRemote: MFLoadRemote | null = null;
@@ -112,7 +118,10 @@ const delay = (ms: number): Promise<void> => {
  * Build the remote entry URL from a base URL
  * Vite puts remoteEntry.js at root, Webpack puts it in /assets/
  */
-const buildRemoteEntryUrl = (baseUrl: string, bundler: BundlerType = "vite"): string => {
+const buildRemoteEntryUrl = (
+  baseUrl: string,
+  bundler: BundlerType = "vite",
+): string => {
   const cleanUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
   if (bundler === "webpack") {
     return `${cleanUrl}/assets/remoteEntry.js`;
@@ -124,12 +133,12 @@ const buildRemoteEntryUrl = (baseUrl: string, bundler: BundlerType = "vite"): st
  * Register a remote dynamically with the Module Federation runtime
  */
 const ensureRemoteRegistered = (
-  scope: string, 
-  url: string, 
-  bundler: BundlerType = "vite"
+  scope: string,
+  url: string,
+  bundler: BundlerType = "vite",
 ): void => {
   const entryUrl = buildRemoteEntryUrl(url, bundler);
-  
+
   // Check if already registered with the same URL
   if (registeredRemotes.get(scope) === entryUrl) {
     return;
@@ -138,14 +147,17 @@ const ensureRemoteRegistered = (
   // For dynamic registration, we need to use registerRemotes if available
   // Otherwise, we'll rely on the loadRemote handling it via the entry URL
   if (mfRegisterRemotes) {
-    mfRegisterRemotes([
-      {
-        name: scope,
-        entry: entryUrl,
-        // Both Vite and Webpack use 'global' type when served from remoteEntry.js
-        type: bundler === "webpack" ? "global" : "esm",
-      },
-    ], { force: true });
+    mfRegisterRemotes(
+      [
+        {
+          name: scope,
+          entry: entryUrl,
+          // Both Vite and Webpack use 'global' type when served from remoteEntry.js
+          type: bundler === "webpack" ? "global" : "esm",
+        },
+      ],
+      { force: true },
+    );
   }
 
   registeredRemotes.set(scope, entryUrl);
@@ -199,7 +211,9 @@ export const loadRemoteByConfig = async <T = unknown>(
   if (!mfLoadRemote) {
     return {
       success: false,
-      error: new Error("Federation not initialized. Call initFederation() first."),
+      error: new Error(
+        "Federation not initialized. Call initFederation() first.",
+      ),
     };
   }
 
@@ -213,8 +227,10 @@ export const loadRemoteByConfig = async <T = unknown>(
       // Use Module Federation's unified loadRemote API
       // Format: "scope/module" (e.g., "demoApp/routes")
       const moduleId = `${scope}${module.startsWith("./") ? module.slice(1) : `/${module}`}`;
-      
-      const loadPromise = mfLoadRemote(moduleId, { from: "runtime" }) as Promise<T>;
+
+      const loadPromise = mfLoadRemote(moduleId, {
+        from: "runtime",
+      }) as Promise<T>;
 
       const result = await Promise.race([
         loadPromise,
@@ -222,7 +238,9 @@ export const loadRemoteByConfig = async <T = unknown>(
       ]);
 
       if (result === null) {
-        throw new Error(`Failed to load module "${moduleId}": module returned null`);
+        throw new Error(
+          `Failed to load module "${moduleId}": module returned null`,
+        );
       }
 
       // Cache the result

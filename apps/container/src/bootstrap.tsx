@@ -1,7 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { init, loadRemote as mfLoadRemote, registerRemotes } from "@module-federation/enhanced/runtime";
+import {
+  init,
+  loadRemote as mfLoadRemote,
+  registerRemotes,
+} from "@module-federation/enhanced/runtime";
 import { initFederation } from "@mf-hub/loader";
 import { LoadedAppsProvider } from "./context/LoadedAppsContext";
 import { RemoteAppConfig, RemotesProvider } from "./context/RemotesContext";
@@ -43,7 +47,8 @@ init({
 // Initialize the loader with the Module Federation runtime API
 // Use a wrapper to match the loader's expected type signature
 initFederation({
-  loadRemote: (id, options) => mfLoadRemote(id, { from: "runtime", ...options }),
+  loadRemote: (id, options) =>
+    mfLoadRemote(id, { from: "runtime", ...options }),
   registerRemotes: registerRemotes,
 });
 
@@ -73,5 +78,5 @@ createRoot(rootElement).render(
         <RouterProvider router={router} />
       </LoadedAppsProvider>
     </RemotesProvider>
-  </StrictMode>
+  </StrictMode>,
 );

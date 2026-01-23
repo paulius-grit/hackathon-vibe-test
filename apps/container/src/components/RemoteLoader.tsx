@@ -26,7 +26,7 @@ async function loadRemoteCSS(url: string, scope: string): Promise<void> {
   // Try to fetch the style.css file from the remote
   // @module-federation/vite outputs CSS to /assets/style-*.css
   const cleanUrl = url.endsWith("/") ? url.slice(0, -1) : url;
-  
+
   try {
     // First, try to find the CSS file by fetching the index.html and parsing it
     const indexResponse = await fetch(`${cleanUrl}/index.html`);
@@ -36,10 +36,10 @@ async function loadRemoteCSS(url: string, scope: string): Promise<void> {
       const cssMatch = html.match(/href=["']([^"']*style[^"']*\.css)["']/);
       if (cssMatch && cssMatch[1]) {
         const cssPath = cssMatch[1];
-        const cssUrl = cssPath.startsWith("http") 
-          ? cssPath 
+        const cssUrl = cssPath.startsWith("http")
+          ? cssPath
           : `${cleanUrl}${cssPath.startsWith("/") ? "" : "/"}${cssPath}`;
-        
+
         const link = document.createElement("link");
         link.id = linkId;
         link.rel = "stylesheet";

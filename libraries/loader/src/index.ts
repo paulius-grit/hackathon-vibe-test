@@ -11,7 +11,12 @@ export type {
   BundlerType,
 } from "./types";
 
-export type { FederationConfig, MFLoadRemote, MFRegisterRemotes, MFRemoteInfo } from "./loadRemote";
+export type {
+  FederationConfig,
+  MFLoadRemote,
+  MFRegisterRemotes,
+  MFRemoteInfo,
+} from "./loadRemote";
 
 // Registry functions
 export {
