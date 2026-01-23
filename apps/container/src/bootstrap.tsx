@@ -18,27 +18,27 @@ init({
   remotes: [],
   shared: {
     react: {
-      version: "18.3.1",
+      version: "19.0.0",
       lib: () => import("react"),
       shareConfig: {
         singleton: true,
-        requiredVersion: "^18.0.0",
+        requiredVersion: "^19.0.0",
       },
     },
     "react-dom": {
-      version: "18.3.1",
+      version: "19.0.0",
       lib: () => import("react-dom"),
       shareConfig: {
         singleton: true,
-        requiredVersion: "^18.0.0",
+        requiredVersion: "^19.0.0",
       },
     },
     "@tanstack/react-router": {
-      version: "1.45.0",
+      version: "1.154.0",
       lib: () => import("@tanstack/react-router"),
       shareConfig: {
         singleton: true,
-        requiredVersion: "^1.45.0",
+        requiredVersion: "^1.154.0",
       },
     },
   },

@@ -66,7 +66,7 @@ export class RemoteAppsController {
           error: {
             message: "Validation failed",
             code: "VALIDATION_ERROR",
-            details: validationResult.error.errors,
+            details: validationResult.error.issues,
           },
         });
         return;
@@ -101,7 +101,7 @@ export class RemoteAppsController {
           error: {
             message: "Validation failed",
             code: "VALIDATION_ERROR",
-            details: validationResult.error.errors,
+            details: validationResult.error.issues,
           },
         });
         return;
@@ -198,7 +198,7 @@ export class RemoteAppsController {
           error: {
             message: "Validation failed",
             code: "VALIDATION_ERROR",
-            details: validationResult.error.errors,
+            details: validationResult.error.issues,
           },
         });
         return;

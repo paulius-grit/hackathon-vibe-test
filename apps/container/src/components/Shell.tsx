@@ -1,4 +1,5 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { motion, AnimatePresence } from "motion/react";
 import { useRemotes } from "@/context/RemotesContext";
 import { useLoadedApps } from "@/context/LoadedAppsContext";
 import {
@@ -198,39 +199,55 @@ export function Shell({ children }: ShellProps) {
         {loadedApps.length > 0 && (
           <header className="flex-shrink-0 border-b border-border bg-muted/40 px-4 py-2 opacity-0 animate-fade-in">
             <div className="flex items-center gap-1 overflow-y-auto">
-              {loadedApps.map((app) => {
-                const IconComponent = getIconComponent(app.icon);
-                return (
-                  <div
-                    key={app.name}
-                    className={cn(
-                      "flex shrink-0 items-center gap-0 px-3 py-1.5 text-sm font-medium rounded-md border border-transparent",
-                      "transition-all duration-200 group",
-                      currentPath.startsWith(`/apps/${app.name}`)
-                        ? "bg-background text-foreground shadow-s border-gray-200"
-                        : "text-muted-foreground hover:text-foreground hover:bg-background/50",
-                    )}
-                  >
-                    <button
-                      onClick={() => handleTabClick(app.name)}
-                      className="inline-flex items-center gap-2"
-                    >
-                      <IconComponent className="w-4 h-4 shrink-0" />
-                      <span>{app.title}</span>
-                    </button>
-                    <button
-                      onClick={() => handleTabClose(app.name)}
+              <AnimatePresence mode="popLayout">
+                {loadedApps.map((app) => {
+                  const IconComponent = getIconComponent(app.icon);
+                  const isActive = currentPath.startsWith(`/apps/${app.name}`);
+                  return (
+                    <motion.div
+                      key={app.name}
+                      layout
+                      initial={{ opacity: 0, scale: 0.9, x: -10 }}
+                      animate={{ opacity: 1, scale: 1, x: 0 }}
+                      exit={{ opacity: 0, scale: 0.9, x: -10 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
                       className={cn(
-                        "ml-1 rounded-sm p-0.5 -mr-1",
-                        "opacity-0 group-hover:opacity-60 hover:!opacity-100",
-                        "transition-opacity",
+                        "relative flex shrink-0 items-center gap-0 px-3 py-1.5 text-sm font-medium rounded-md",
+                        "transition-colors duration-200 group",
+                        isActive
+                          ? "text-foreground"
+                          : "text-muted-foreground hover:text-foreground",
                       )}
                     >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                );
-              })}
+                      {/* Animated active background */}
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeTabBackground"
+                          className="absolute inset-0 bg-background shadow-sm border border-gray-200 rounded-md"
+                          transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+                        />
+                      )}
+                      <button
+                        onClick={() => handleTabClick(app.name)}
+                        className="relative z-10 inline-flex items-center gap-2"
+                      >
+                        <IconComponent className="w-4 h-4 shrink-0" />
+                        <span>{app.title}</span>
+                      </button>
+                      <button
+                        onClick={() => handleTabClose(app.name)}
+                        className={cn(
+                          "relative z-10 ml-1 rounded-sm p-0.5 -mr-1",
+                          "opacity-0 group-hover:opacity-60 hover:!opacity-100",
+                          "transition-opacity",
+                        )}
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
             </div>
           </header>
         )}

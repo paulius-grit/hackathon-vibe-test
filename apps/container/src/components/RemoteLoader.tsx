@@ -1,4 +1,5 @@
-import { useState, useEffect, type ReactNode } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import {
   loadRemoteByUrl,
   type LoadRemoteResult,
@@ -11,6 +12,35 @@ import {
 } from "@mf-hub/router";
 import { Card, CardContent, Skeleton } from "@mf-hub/ui";
 import { ErrorBoundary } from "./ErrorBoundary";
+
+/**
+ * Animation variants for page transitions
+ */
+const pageVariants = {
+  initial: {
+    opacity: 0,
+    y: 20,
+    scale: 0.98,
+  },
+  animate: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.3,
+      ease: "easeOut" as const,
+    },
+  },
+  exit: {
+    opacity: 0,
+    y: -10,
+    scale: 0.98,
+    transition: {
+      duration: 0.2,
+      ease: "easeIn" as const,
+    },
+  },
+};
 
 /**
  * Load CSS from the remote app's dist folder
@@ -147,38 +177,63 @@ export function RemoteLoader({
     };
   }, [url, scope, module, bundler, basePath]);
 
-  if (state.status === "loading") {
-    return <>{fallback}</>;
-  }
+  // Track previous scope to detect app switching
+  const prevScopeRef = useRef(scope);
+  const isAppSwitch = prevScopeRef.current !== scope;
+  
+  useEffect(() => {
+    prevScopeRef.current = scope;
+  }, [scope]);
 
-  if (state.status === "error") {
-    return (
-      <>
-        {errorFallback ?? (
+  // Render content without AnimatePresence for loading->loaded transition
+  // Only use animations when switching between different apps
+  const renderContent = () => {
+    if (state.status === "loading") {
+      return fallback;
+    }
+
+    if (state.status === "error") {
+      return (
+        errorFallback ?? (
           <DefaultErrorFallback error={state.error} url={url} scope={scope} />
-        )}
-      </>
+        )
+      );
+    }
+
+    return (
+      <ErrorBoundary
+        fallback={
+          <DefaultErrorFallback
+            error={new Error("Remote component crashed")}
+            url={url}
+            scope={scope}
+          />
+        }
+      >
+        <MicroAppRenderer
+          basePath={basePath}
+          routeConfig={state.routeConfig}
+          initialPath={initialPath}
+          useBrowserHistory={useBrowserHistory}
+          fallback={fallback}
+        />
+      </ErrorBoundary>
     );
-  }
+  };
 
   return (
-    <ErrorBoundary
-      fallback={
-        <DefaultErrorFallback
-          error={new Error("Remote component crashed")}
-          url={url}
-          scope={scope}
-        />
-      }
-    >
-      <MicroAppRenderer
-        basePath={basePath}
-        routeConfig={state.routeConfig}
-        initialPath={initialPath}
-        useBrowserHistory={useBrowserHistory}
-        fallback={fallback}
-      />
-    </ErrorBoundary>
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={scope}
+        variants={pageVariants}
+        initial={isAppSwitch ? "initial" : false}
+        animate="animate"
+        exit="exit"
+        className="h-full"
+      >
+        {renderContent()}
+      </motion.div>
+    </AnimatePresence>
   );
 }
 
