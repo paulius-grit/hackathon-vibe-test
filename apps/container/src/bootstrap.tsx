@@ -55,8 +55,14 @@ initFederation({
 // Fallback remotes in case API is unavailable
 const fallbackRemotes: RemoteAppConfig[] = [];
 
-// Create a new router instance
-const router = createRouter({ routeTree });
+// Create a new router instance with settings to prevent flash of not-found during transitions
+const router = createRouter({
+  routeTree,
+  defaultPendingMs: 0,
+  defaultPendingMinMs: 0,
+  // Handle trailing slashes consistently
+  trailingSlash: "never",
+});
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {

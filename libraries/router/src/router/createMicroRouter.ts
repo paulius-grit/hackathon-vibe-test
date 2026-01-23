@@ -105,6 +105,11 @@ export function createMicroRouter(
     routeTree: routeTreeWithChildren,
     history,
     basepath: useBrowserHistory ? basePath : undefined,
+    // Prevent flashing of loading/not-found states during quick transitions
+    defaultPendingMs: 0,
+    defaultPendingMinMs: 0,
+    // Handle trailing slashes consistently
+    trailingSlash: "never",
   });
 
   return router;

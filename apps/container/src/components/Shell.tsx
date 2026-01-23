@@ -224,7 +224,11 @@ export function Shell({ children }: ShellProps) {
                         <motion.div
                           layoutId="activeTabBackground"
                           className="absolute inset-0 bg-background shadow-sm border border-gray-200 rounded-md"
-                          transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+                          transition={{
+                            type: "spring",
+                            bounce: 0.2,
+                            duration: 0.4,
+                          }}
                         />
                       )}
                       <button

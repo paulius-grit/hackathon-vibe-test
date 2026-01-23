@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef, type ReactNode } from "react";
-import { motion, AnimatePresence } from "motion/react";
+import { useState, useEffect, type ReactNode } from "react";
 import {
   loadRemoteByUrl,
   type LoadRemoteResult,
@@ -12,35 +11,6 @@ import {
 } from "@mf-hub/router";
 import { Card, CardContent, Skeleton } from "@mf-hub/ui";
 import { ErrorBoundary } from "./ErrorBoundary";
-
-/**
- * Animation variants for page transitions
- */
-const pageVariants = {
-  initial: {
-    opacity: 0,
-    y: 20,
-    scale: 0.98,
-  },
-  animate: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: {
-      duration: 0.3,
-      ease: "easeOut" as const,
-    },
-  },
-  exit: {
-    opacity: 0,
-    y: -10,
-    scale: 0.98,
-    transition: {
-      duration: 0.2,
-      ease: "easeIn" as const,
-    },
-  },
-};
 
 /**
  * Load CSS from the remote app's dist folder
@@ -177,16 +147,7 @@ export function RemoteLoader({
     };
   }, [url, scope, module, bundler, basePath]);
 
-  // Track previous scope to detect app switching
-  const prevScopeRef = useRef(scope);
-  const isAppSwitch = prevScopeRef.current !== scope;
-  
-  useEffect(() => {
-    prevScopeRef.current = scope;
-  }, [scope]);
-
-  // Render content without AnimatePresence for loading->loaded transition
-  // Only use animations when switching between different apps
+  // Render content based on loading state
   const renderContent = () => {
     if (state.status === "loading") {
       return fallback;
@@ -221,20 +182,7 @@ export function RemoteLoader({
     );
   };
 
-  return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={scope}
-        variants={pageVariants}
-        initial={isAppSwitch ? "initial" : false}
-        animate="animate"
-        exit="exit"
-        className="h-full"
-      >
-        {renderContent()}
-      </motion.div>
-    </AnimatePresence>
-  );
+  return <div className="h-full">{renderContent()}</div>;
 }
 
 function DefaultFallback() {

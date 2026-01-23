@@ -33,6 +33,10 @@
   },
   "packageManager": "pnpm@10.28.1",
   "pnpm": {
-    "onlyBuiltDependencies": ["esbuild", "@esbuild/*", "@rspack/*"]
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "@esbuild/*",
+      "@rspack/*"
+    ]
   }
 }
